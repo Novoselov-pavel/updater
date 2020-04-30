@@ -10,7 +10,6 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="750.0" style="-fx-background-color: #1f72bf;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UIMainFormController">
    <children>
       <Text fill="WHITE" layoutX="72.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Updater-Administration mode" AnchorPane.topAnchor="5.0">
@@ -32,7 +31,7 @@
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
                               <Button fx:id="selectPathButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" text="Text.SelectPath" AnchorPane.bottomAnchor="252.0" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="594.0" AnchorPane.topAnchor="42.0" />
-                              <TextArea layoutX="173.0" layoutY="-47.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="220.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                              <TextArea fx:id="textPathArray" layoutX="173.0" layoutY="-47.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="220.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                               <ListView fx:id="listView" focusTraversable="false" layoutX="71.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                            </children>
                         </AnchorPane>
