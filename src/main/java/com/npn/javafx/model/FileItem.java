@@ -1,12 +1,13 @@
 package com.npn.javafx.model;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 /**Класс предназначен для хранения объектов (файлов) с которыми работает программа.
  */
 public class FileItem {
     private final Path path;
-    private int CRC32;
+    private long CRC32;
 
 
     public FileItem(Path path) {
@@ -21,11 +22,11 @@ public class FileItem {
         return path.getFileName().toString();
     }
 
-    public int getCRC32() {
+    public long getCRC32() {
         return CRC32;
     }
 
-    public void setCRC32(int CRC32) {
+    public void setCRC32(long CRC32) {
         this.CRC32 = CRC32;
     }
 
@@ -39,4 +40,18 @@ public class FileItem {
         return item;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileItem item = (FileItem) o;
+        return CRC32 == item.CRC32 &&
+                Objects.equals(path, item.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path, CRC32);
+    }
 }

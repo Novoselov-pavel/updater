@@ -8,6 +8,7 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//TODO доделать до автоматического режима тестов если найду сервер удобный для проверки
 class URLFileLoadTest {
 
     @Test

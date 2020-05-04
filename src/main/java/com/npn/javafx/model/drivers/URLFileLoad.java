@@ -1,5 +1,8 @@
 package com.npn.javafx.model.drivers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -13,6 +16,7 @@ import java.util.concurrent.Callable;
  * @param <T> - должен наследоваться от Path
  */
 public class URLFileLoad<T extends Path> implements Callable<Path> {
+    private static final Logger logger = LoggerFactory.getLogger(URLFileLoad.class);
     private final URL url;
 
     /**Конструктор, принимает строку адреса из которого загружается файл
@@ -25,8 +29,18 @@ public class URLFileLoad<T extends Path> implements Callable<Path> {
     }
 
     private Path loadFile() throws Exception {
+        String logFormat = "loadFile File from\t%s";
+        logger.debug(String.format(logFormat,url.toString()));
         Path tempFile = Files.createTempFile(null,".urifileload");
+
+        logFormat = "loadFile create temp file\t%s";
+        logger.debug(String.format(logFormat,tempFile));
+
         tempFile.toFile().deleteOnExit();
+
+        logFormat = "Start loading file from \t%s\tto\t%s";
+        logger.info(String.format(logFormat,url.toString(),tempFile.getFileName().toString()));
+
         try(BufferedInputStream inputStream = new BufferedInputStream(url.openStream());
             OutputStream outputStream = Files.newOutputStream(tempFile)) {
             byte dataBuffer[] = new byte[1024];
@@ -36,10 +50,11 @@ public class URLFileLoad<T extends Path> implements Callable<Path> {
                 outputStream.flush();
             }
         }
+
+        logFormat = "End loading file from \t%s\tto\t%s";
+        logger.info(String.format(logFormat,url.toString(),tempFile.getFileName().toString()));
         return tempFile;
     }
-
-    //*TODO test
 
     /**Загружает файл и возвращает путь на временный файл
      *
