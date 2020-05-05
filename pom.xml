@@ -83,7 +83,11 @@
             <version>1.7.30</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.10.7</version>
+        </dependency>
     </dependencies>
 
     <build>

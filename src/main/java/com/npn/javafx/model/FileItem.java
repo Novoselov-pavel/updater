@@ -1,11 +1,15 @@
 package com.npn.javafx.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.file.Path;
 import java.util.Objects;
 
 /**Класс предназначен для хранения объектов (файлов) с которыми работает программа.
  */
 public class FileItem {
+    private static final Logger logger = LoggerFactory.getLogger(FileItem.class);
     private final Path path;
     private long CRC32;
 
@@ -34,9 +38,20 @@ public class FileItem {
         return path;
     }
 
-    public FileItem copyWithNewPath(Path newPath) {
+    public FileItem copyWithNewPath(final Path newPath) {
+
+        String logFormat = "copyWithNewPath execute from\t%s";
+        logger.debug(String.format(logFormat,newPath.toString()));
+
+        logFormat = "Start copy FileItem with path\t%s";
+        logger.info(String.format(logFormat,newPath.toString()));
+
         FileItem item = new FileItem(newPath);
         item.setCRC32(getCRC32());
+
+        logFormat = "End copy FileItem with path\t%s";
+        logger.info(String.format(logFormat,newPath.toString()));
+
         return item;
     }
 

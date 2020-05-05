@@ -24,7 +24,7 @@ public class URLFileLoad<T extends Path> implements Callable<Path> {
      * @param url адрес URL
      * @throws MalformedURLException в случае ошибки адреса
      */
-    public URLFileLoad(String url) throws MalformedURLException {
+    public URLFileLoad(final String url) throws MalformedURLException {
         this.url = new URL(url);
     }
 
@@ -34,7 +34,7 @@ public class URLFileLoad<T extends Path> implements Callable<Path> {
         Path tempFile = Files.createTempFile(null,".urifileload");
 
         logFormat = "loadFile create temp file\t%s";
-        logger.debug(String.format(logFormat,tempFile));
+        logger.info(String.format(logFormat,tempFile));
 
         tempFile.toFile().deleteOnExit();
 

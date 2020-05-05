@@ -16,22 +16,22 @@ public interface ArchiveDriver {
      *
      * @param zipFilePath  адрес распаковываемого архива
      * @param destinationFolder  адрес папки в которую производится распаковка
-     * @param filesSystemCharsets  кодировка консоли файловой системы (для Windows CP866)
+     * @param filesSystemCharset  кодировка консоли файловой системы (для Windows CP866)
      * @return список {@link FileItem}
      * @throws Exception при ошибках
      */
-    List<FileItem> unPack(Path zipFilePath, Path destinationFolder, StandardCharsets filesSystemCharsets) throws Exception;
+    List<FileItem> unPack(Path zipFilePath, Path destinationFolder, StandardCharsets filesSystemCharset) throws Exception;
 
     /** Упаковываем файлы в архивов
      *
      * @param files список {@link FileItem} которые надо упаковать
      * @param basePath адрес папки относительно которой рассчитываются относительные пути в архиве
      * @param zipFilePath адрес архива
-     * @param filesSystemCharsets  кодировка консоли файловой системы (для Windows CP866)
+     * @param filesSystemCharset  кодировка консоли файловой системы (для Windows CP866)
      * @return {@link FileItem} архива
      * @throws Exception при ошибках
      */
-    FileItem pack(List<FileItem> files, Path basePath, Path zipFilePath, StandardCharsets filesSystemCharsets) throws Exception;
+    FileItem pack(List<FileItem> files, Path basePath, Path zipFilePath, StandardCharsets filesSystemCharset) throws Exception;
 
     /** Возвращает список расширений файлов для которых предназначена имплементация интрефейса
      *
