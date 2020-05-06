@@ -18,10 +18,10 @@ public class CRC32Calculator {
     private CRC32 crc32 = new CRC32();
 
 
-    /**расчитывает
+    /**Расчитывает CRC32 у файла
      *
-     * @param path
-     * @return
+     * @param path путь файла
+     * @return CRC32
      * @throws IOException
      */
     public long getCRC32 (Path path) throws IOException {
@@ -53,4 +53,22 @@ public class CRC32Calculator {
         }
     }
 
+    /**Обновляет CRC32
+     *
+     * @param b массив байтов
+     * @param off начальный индекс в массиве
+     * @param len длина массива
+     */
+    public void update(byte[] b, int off, int len) {
+        crc32.update(b,off,len);
+
+    }
+
+    /**Возвращает CRC32 у текущего объекта
+     *
+     * @return CRC32
+     */
+    public long getCRC32 () {
+        return crc32.getValue();
+    }
 }
