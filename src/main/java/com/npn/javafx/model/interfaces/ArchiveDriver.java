@@ -3,6 +3,7 @@ package com.npn.javafx.model.interfaces;
 import com.npn.javafx.model.FileItem;
 
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -20,7 +21,7 @@ public interface ArchiveDriver {
      * @return список {@link FileItem}
      * @throws Exception при ошибках
      */
-    List<FileItem> unPack(Path zipFilePath, Path destinationFolder, StandardCharsets filesSystemCharset) throws Exception;
+    List<FileItem> unPack(Path zipFilePath, Path destinationFolder, Charset filesSystemCharset) throws Exception;
 
     /** Упаковываем файлы в архивов
      *
@@ -31,7 +32,7 @@ public interface ArchiveDriver {
      * @return {@link FileItem} архива
      * @throws Exception при ошибках
      */
-    FileItem pack(List<FileItem> files, Path basePath, Path zipFilePath, StandardCharsets filesSystemCharset) throws Exception;
+    FileItem pack(List<FileItem> files, Path basePath, Path zipFilePath, Charset filesSystemCharset) throws Exception;
 
     /** Возвращает список расширений файлов для которых предназначена имплементация интрефейса
      *

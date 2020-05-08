@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -43,11 +44,11 @@ public class ZipDriver implements ArchiveDriver {
      * @throws Exception при ошибках
      */
     @Override
-    public List<FileItem> unPack(final Path zipFilePath, final Path destinationFolder, final StandardCharsets filesSystemCharset) throws Exception {
-        String logFormat = "unPack zipFile\t%s\t%to\t%s\tFileSystemCharset\t%s";
+    public List<FileItem> unPack(final Path zipFilePath, final Path destinationFolder, final Charset filesSystemCharset) throws Exception {
+        String logFormat = "unPack zipFile\t%s\tto\t%s\tFileSystemCharset\t%s";
         logger.debug(String.format(logFormat,zipFilePath.toString(),destinationFolder.toString(), filesSystemCharset.toString()));
 
-        logFormat = "Start unpack file\t%s\t%to\t%s\tFileSystemCharset\t%s";
+        logFormat = "Start unpack file\t%s\tto\t%s\tFileSystemCharset\t%s";
         logger.info(String.format(logFormat,zipFilePath.toString(),destinationFolder.toString(), filesSystemCharset.toString()));
 
         List<FileItem> filesList = new ArrayList<>();
@@ -58,7 +59,7 @@ public class ZipDriver implements ArchiveDriver {
                 filesList.add(unPackZipEntry(zipFile,entry,destinationFolder));
             }
         }
-        logFormat = "End unpack file\t%s\t%to\t%s\tFileSystemCharset\t%s";
+        logFormat = "End unpack file\t%s\tto\t%s\tFileSystemCharset\t%s";
         logger.info(String.format(logFormat,zipFilePath.toString(),destinationFolder.toString(), filesSystemCharset.toString()));
         return filesList;
     }
@@ -77,13 +78,19 @@ public class ZipDriver implements ArchiveDriver {
      * @throws Exception при ошибках
      */
     @Override
-    public FileItem pack(final List<FileItem> files,final Path basePath,final Path zipFilePath,final StandardCharsets filesSystemCharset) throws Exception {
+    public FileItem pack(final List<FileItem> files,final Path basePath,final Path zipFilePath,final Charset filesSystemCharset) throws Exception {
         //TODO
         String logFormat = "Pack files to\t%s\tFileSystemCharset\t%s";
         logger.debug(String.format(logFormat,zipFilePath.toString(), filesSystemCharset.toString()));
 
         logFormat = "Start Pack files to\t%s\tFileSystemCharset\t%s";
         logger.info(String.format(logFormat,zipFilePath.toString(), filesSystemCharset.toString()));
+
+        try {
+          Files.createDirectories(zipFilePath.getParent());
+        } catch (FileAlreadyExistsException ignored) {}
+
+
         try(ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zipFilePath))) {
             zipOutputStream.setEncoding(filesSystemCharset.toString());
             zipOutputStream.setUseZip64(Zip64Mode.Always);
@@ -234,7 +241,7 @@ public class ZipDriver implements ArchiveDriver {
      * @return CRC32 для упакованного файла
      * @throws Exception
      */
-    private long packFileItem(final ZipOutputStream outputStream, final FileItem file, final Path basePath, final StandardCharsets filesSystemCharset) throws Exception {
+    private long packFileItem(final ZipOutputStream outputStream, final FileItem file, final Path basePath, final Charset filesSystemCharset) throws Exception {
 
         String logFormat = "Start Pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
         logger.info(String.format(logFormat,file.getPath().toString(), basePath.toString(), filesSystemCharset.toString()));

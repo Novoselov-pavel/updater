@@ -9,7 +9,7 @@ public interface FilesParser {
 
     /**Получает список адресов файлов  которые требуется скачать из папки с версией
      *
-     * @param path фдрес папки с версией
+     * @param path адрес папки с версией
      * @return список адресов
      * @throws Exception
      */
