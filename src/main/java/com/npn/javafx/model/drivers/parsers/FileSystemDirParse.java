@@ -27,7 +27,7 @@ public class FileSystemDirParse implements FilesParser {
      * @throws Exception
      */
     @Override
-    public List<String> getFilesAddress(String path) throws Exception {
+    public List<String> getFilesAddress(final String path) throws Exception {
         String logFormat = "getFilesAddress from\t%s";
         logger.debug(String.format(logFormat,path));
 

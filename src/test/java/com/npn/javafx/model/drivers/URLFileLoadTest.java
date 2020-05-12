@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//TODO доделать до автоматического режима тестов если найду сервер удобный для проверки
+//TODO доделать до автоматического режима тестов если найду сервер удобный для проверки и дописать проверку CRC
 class URLFileLoadTest {
 
     @Test
@@ -20,7 +20,6 @@ class URLFileLoadTest {
             Path path = future.get();
             executorService.shutdownNow();
             System.out.println(path.toString());
-            //TODO дописать проверку CRC
         } catch (Exception e) {
             fail();
         }

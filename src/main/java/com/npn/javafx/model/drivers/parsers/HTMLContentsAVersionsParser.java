@@ -7,6 +7,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,17 +18,25 @@ import java.util.stream.Collectors;
  * например см. адрес https://repo1.maven.org/maven2/io/micronaut/micronaut-runtime/
  */
 public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser {
-    ///TODO логгер добавить
+    private static final Logger logger = LoggerFactory.getLogger(HTMLContentsAVersionsParser.class);
+    private static final String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36 OPR/67.0.3575.137";
+
     /**Возвращает список адресов
      *
      * @param path адрес (URL) где располагается список версий
      * @return List со списком версий
      */
     @Override
-    public List<String> getVersion(String path) throws Exception {
+    public List<String> getVersion(final String path) throws Exception {
+        String logFormat = "getVersion from\t%s";
+        logger.debug(String.format(logFormat,path));
+
+
         List<String> list = new ArrayList<>();
 
-        String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36 OPR/67.0.3575.137";
+        logFormat = "Start get version folder from\t%s";
+        logger.info(String.format(logFormat,path));
+
         Document document = Jsoup.connect(path).userAgent(userAgent).referrer("").get();
         Element element = document.getElementById("contents");
         Elements elements = element.select("a");
@@ -38,6 +48,9 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
         });
 
         removeExceptionFromList(list);
+
+        logFormat = "End get version folder from\t%s";
+        logger.info(String.format(logFormat,path));
         return normalization(list);
     }
 
@@ -50,8 +63,13 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
      * @throws Exception при ошибке
      */
     @Override
-    public String getAddress(String version, String path) throws Exception {
-        String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36 OPR/67.0.3575.137";
+    public String getAddress(final String version, final String path) throws Exception {
+        String logFormat = "getAddress version\t%s\tfrom\t%s";
+        logger.debug(String.format(logFormat,version,path));
+
+        logFormat = "Start get folder to version\t%s\tfrom\t%s";
+        logger.info(String.format(logFormat,version,path));
+
         Document document = Jsoup.connect(path).userAgent(userAgent).referrer("").get();
         Element element = document.getElementById("contents");
         Elements elements = element.select("a");
@@ -61,6 +79,8 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
                                 findFirst().
                                 orElse(null);
         if (result!=null) {
+            logFormat = "End get folder to version\t%s\tfrom\t%s";
+            logger.info(String.format(logFormat,version,path));
             return getFullAddress(path, result.attr("href"));
         }
         return null;
@@ -74,11 +94,16 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
      * @throws Exception
      */
     @Override
-    public List<String> getFilesAddress(String path) throws Exception {
+    public List<String> getFilesAddress(final String path) throws Exception {
+        String logFormat = "getFilesAddress from\t%s";
+        logger.debug(String.format(logFormat,path));
+
         List<String> files = new ArrayList<>();
         List<String> fullPathList = new ArrayList<>();
 
-        String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36 OPR/67.0.3575.137";
+        logFormat = "Start search files from\t%s";
+        logger.info(String.format(logFormat,path));
+
         Document document = Jsoup.connect(path).userAgent(userAgent).referrer("").get();
         Element element = document.getElementById("contents");
         Elements elements = element.select("a");
@@ -89,6 +114,8 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
 
         removeExceptionFromList(files);
         files.forEach(x->fullPathList.add(getFullAddress(path,x)));
+        logFormat = "End search files from\t%s";
+        logger.info(String.format(logFormat,path));
         return fullPathList;
     }
 
@@ -100,7 +127,10 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
      * Если вторая чать null вернет null.
      *
      */
-    private String getFullAddress(String firstPart, String secondPart) {
+    private String getFullAddress(final String firstPart, final String secondPart) {
+        String logFormat = "getFullAddress";
+        logger.debug(logFormat);
+
         if (secondPart==null) return null;
         String retVal = firstPart.endsWith("/")? firstPart : firstPart + "/";
         retVal += secondPart;
@@ -112,6 +142,9 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
      * @param strings
      */
     private void removeExceptionFromList(List<String> strings) {
+        String logFormat = "removeExceptionFromList";
+        logger.debug(logFormat);
+
         strings.remove("../");
     }
 
@@ -120,6 +153,9 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
      * @param strings
      */
     private List<String> normalization(List<String> strings) {
+        String logFormat = "normalization";
+        logger.debug(logFormat);
+
         return strings.stream().map(x-> x.substring(0,x.length()-1)).collect(Collectors.toList());
     }
 

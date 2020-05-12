@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,7 +78,6 @@ public class ZipDriver implements ArchiveDriver {
      */
     @Override
     public FileItem pack(final List<FileItem> files,final Path basePath,final Path zipFilePath,final Charset filesSystemCharset) throws Exception {
-        //TODO
         String logFormat = "Pack files to\t%s\tFileSystemCharset\t%s";
         logger.debug(String.format(logFormat,zipFilePath.toString(), filesSystemCharset.toString()));
 
