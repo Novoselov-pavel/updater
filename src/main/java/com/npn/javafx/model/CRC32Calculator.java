@@ -15,19 +15,19 @@ import java.util.zip.CRC32;
 public class CRC32Calculator {
     private static final Logger logger = LoggerFactory.getLogger(CRC32Calculator.class);
     private static final int BUFFER_SIZE = 8192;
-    private CRC32 crc32 = new CRC32();
+    private final CRC32 crc32 = new CRC32();
 
 
-    /**Расчитывает CRC32 у файла
+    /**Расчитывает CRC32 у файла, текущее значение CRC сбрасывается
      *
      * @param path путь файла
      * @return CRC32
      * @throws IOException
      */
-    public long getCRC32 (Path path) throws IOException {
+    public long getCRC32 (final Path path) throws IOException {
         String logFormat = "getCRC32 File\t%s";
         logger.debug(String.format(logFormat,path.toString()));
-        crc32 = new CRC32();
+        crc32.reset();
 
         logFormat = "Start calculate SRC32 from file\t%s";
         logger.info(String.format(logFormat,path.toString()));
@@ -61,7 +61,13 @@ public class CRC32Calculator {
      */
     public void update(byte[] b, int off, int len) {
         crc32.update(b,off,len);
+    }
 
+    /**Сбрасывает текущее значение CRC
+     *
+     */
+    public void reset() {
+        crc32.reset();
     }
 
     /**Возвращает CRC32 у текущего объекта

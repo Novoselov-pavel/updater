@@ -1,5 +1,8 @@
 package com.npn.javafx.model;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,17 +11,18 @@ import java.util.Objects;
 
 /**Класс предназначен для хранения объектов (файлов) с которыми работает программа.
  */
+@XmlRootElement(name = "file")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class FileItem {
     private static final Logger logger = LoggerFactory.getLogger(FileItem.class);
     private final Path path;
     private long CRC32;
+    private boolean unpack;
 
 
     public FileItem(Path path) {
         this.path = path;
     }
-
-
 
 
 
@@ -30,13 +34,23 @@ public class FileItem {
         return CRC32;
     }
 
+    public Path getPath() {
+        return path;
+    }
+
+    public boolean isUnpack() {
+        return unpack;
+    }
+
     public void setCRC32(long CRC32) {
         this.CRC32 = CRC32;
     }
 
-    public Path getPath() {
-        return path;
+    public void setUnpack(boolean unpack) {
+        this.unpack = unpack;
     }
+
+
 
     public FileItem copyWithNewPath(final Path newPath) {
 
@@ -54,6 +68,8 @@ public class FileItem {
 
         return item;
     }
+
+
 
 
     @Override

@@ -7,11 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**Безопасное копирование файлов из адресов исходного списка в адреса итогового списка.
  * ИНДЕКСЫ СООТВЕСТВУЮЩИХ ФАЙЛОВ ДОЛЖНЫ СОВПАДАТЬ В ПЕРЕДАННЫХ В КОНСТРУКТОРЕ СПИСКАХ
@@ -64,7 +66,8 @@ public class SafeCopyFiles extends Thread {
 
                 try{
                     tempList = createTempList(destinationFiles);
-                    copyFiles(destinationFiles,tempList);
+                    List<Path> finalTempList = tempList;
+                    copyIfExist(destinationFiles,tempList);
                 } catch (IOException e) {
                     if (i==MAX_ITERATION-1) {
                         throw new FailUpdateFiles("Error at creating temp files", e);
@@ -80,7 +83,7 @@ public class SafeCopyFiles extends Thread {
                 } catch (IOException e) {
                     if (i==MAX_ITERATION-1) {
                         try {
-                            copyFiles(tempList,destinationFiles);
+                            copyIfExist(tempList,destinationFiles);
                         } catch (IOException rollbackException) {
                             throw new SafeCopyFilesException("Fatal Error on safe copy files\nOriginal files:\n" + pathListToString(tempList),rollbackException);
                         }
@@ -93,6 +96,7 @@ public class SafeCopyFiles extends Thread {
                 logger.info(logFormat);
                 logFormat = "SafeCopyFiles ended";
                 logger.debug(logFormat);
+                break;
 
             }
 
@@ -120,7 +124,8 @@ public class SafeCopyFiles extends Thread {
         if (!isInterrupted()) {
             List<Path> returnList = new ArrayList<>();
                 for (Path sourceFile : sourceFiles) {
-                    Files.createTempFile(sourceFile.getFileName().toString(),null);
+                    Path path = Files.createTempFile(sourceFile.getFileName().toString(),null);
+                    returnList.add(path);
                 }
              logFormat = "createTempList end";
              logger.debug(logFormat);
@@ -145,12 +150,18 @@ public class SafeCopyFiles extends Thread {
         }
 
         for (int i = 0; i < sourceFiles.size(); i++) {
-            logFormat = "Copy file\t%s\tto\t%s";
-            logger.info(String.format(logFormat,sourceFiles.get(i).toString(), destinationFiles.get(i).toString()));
-            Files.copy(sourceFiles.get(i), destinationFiles.get(i), StandardCopyOption.REPLACE_EXISTING);
+            copyFile(sourceFiles.get(i),destinationFiles.get(i));
         }
         logFormat = "copyFiles end";
         logger.debug(logFormat);
+    }
+
+    /**Копирует один файл
+     */
+    private void copyFile(Path source, Path destination) throws IOException {
+        String logFormat = "Copy file\t%s\tto\t%s";
+        logger.info(String.format(logFormat,source.toString(), destination.toString()));
+        FileUtils.copyFile(source.toFile(),destination.toFile());
     }
 
 
@@ -167,9 +178,7 @@ public class SafeCopyFiles extends Thread {
         return builder.toString();
     }
 
-    /**Удаляет все файлы по списку
-     *
-     * @param list
+    /**Удаляет все файлы по списку     *
      */
     private void deleteFiles(List<Path> list) {
         if (list==null) return;
@@ -178,4 +187,17 @@ public class SafeCopyFiles extends Thread {
             FileUtils.deleteQuietly(path.toFile());
         }
     }
+
+    private void copyIfExist(final List<Path> sourceFiles,final List<Path> destinationFiles) throws IOException {
+        List<Path> sourceFilteredList = sourceFiles.stream().filter(Files::exists).collect(Collectors.toList());
+
+        if (sourceFilteredList.size() ==0) return;
+
+        List<Path> destinationFilteredList = sourceFilteredList
+                                                        .stream()
+                                                        .map(x->destinationFiles.get(sourceFiles.indexOf(x)))
+                                                        .collect(Collectors.toList());
+        copyFiles(sourceFilteredList, destinationFilteredList);
+    }
+
 }

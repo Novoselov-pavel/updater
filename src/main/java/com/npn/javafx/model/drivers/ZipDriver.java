@@ -26,7 +26,7 @@ import java.util.List;
 
 
 /**Класс для работы с zip файлами
- * TODO тесты
+ *
  */
 public class ZipDriver implements ArchiveDriver {
     private final CRC32Calculator crc32 = new CRC32Calculator();
