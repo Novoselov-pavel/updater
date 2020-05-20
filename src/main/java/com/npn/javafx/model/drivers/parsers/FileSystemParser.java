@@ -1,6 +1,5 @@
 package com.npn.javafx.model.drivers.parsers;
 
-import com.npn.javafx.annotation.ParserIgnore;
 import com.npn.javafx.model.interfaces.FilesParser;
 import com.npn.javafx.model.interfaces.VersionsParser;
 import org.slf4j.Logger;

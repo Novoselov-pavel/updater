@@ -14,7 +14,7 @@ public enum PropertiesEnum {
      * @param description описание назначения свойства (справочное)
      * @param isRequired true если свойство обязательно должно быть в Properties false если свойство опционально
      */
-    private PropertiesEnum(String description, boolean isRequired) {
+    PropertiesEnum(String description, boolean isRequired) {
         this.description = description;
         this.isRequired = isRequired;
     }

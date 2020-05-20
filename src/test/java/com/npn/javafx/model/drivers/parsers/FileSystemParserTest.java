@@ -2,8 +2,6 @@ package com.npn.javafx.model.drivers.parsers;
 
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,23 +1,33 @@
 package com.npn.javafx.model;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**Класс предназначен для хранения объектов (файлов) с которыми работает программа.
  */
-@XmlRootElement(name = "file")
+@XmlType
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileItem {
     private static final Logger logger = LoggerFactory.getLogger(FileItem.class);
+    @XmlElement
+    @XmlJavaTypeAdapter(PathAdapter.class)
     private final Path path;
+    @XmlElement
     private long CRC32;
+    @XmlElement
     private boolean unpack;
+
+    private FileItem() {
+        path = null;
+    }
 
 
     public FileItem(Path path) {
@@ -85,4 +95,38 @@ public class FileItem {
     public int hashCode() {
         return Objects.hash(path, CRC32);
     }
+
+
+    private static class PathAdapter extends XmlAdapter<String, Object> {
+
+
+        /**
+         * Convert a value type to a bound type.
+         *
+         * @param v The value to be converted. Can be null.
+         * @throws Exception if there's an error during the conversion. The caller is responsible for
+         *                   reporting the error to the user through {@link ValidationEventHandler}.
+         */
+        @Override
+        public Object unmarshal(String v) throws Exception {
+            return Paths.get(v);
+        }
+
+        /**
+         * Convert a bound type to a value type.
+         *
+         * @param v The value to be convereted. Can be null.
+         * @throws Exception if there's an error during the conversion. The caller is responsible for
+         *                   reporting the error to the user through {@link ValidationEventHandler}.
+         */
+        @Override
+        public String marshal(Object v) throws Exception {
+            if (v instanceof Path) {
+                return v.toString();
+            } else {
+                throw new IllegalArgumentException("Illegal object type. Expected Path");
+            }
+        }
+    }
+
 }

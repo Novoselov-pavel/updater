@@ -2,7 +2,6 @@ package com.npn.javafx.model.drivers.parsers;
 
 import org.junit.jupiter.api.Test;
 
-import java.sql.ClientInfoStatus;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
