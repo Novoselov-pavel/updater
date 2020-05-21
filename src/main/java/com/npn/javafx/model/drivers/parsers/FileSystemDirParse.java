@@ -1,6 +1,5 @@
 package com.npn.javafx.model.drivers.parsers;
 
-import com.npn.javafx.annotation.ParserIgnore;
 import com.npn.javafx.model.interfaces.FilesParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,6 @@ import java.util.List;
 /**Класс для получения всех файлов и подпапок из папки
  *
  */
-@ParserIgnore
 public class FileSystemDirParse implements FilesParser {
     private static final Logger logger = LoggerFactory.getLogger(FileSystemDirParse.class);
 

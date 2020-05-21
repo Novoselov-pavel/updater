@@ -2,7 +2,7 @@ package com.npn.javafx.model.interfaces;
 
 import java.util.Properties;
 
-/**Интерфес для загрузки свойств из файла настроек
+/**Интерфейс для загрузки свойств из файла настроек
  *
  */
 public interface PropertiesLoader {

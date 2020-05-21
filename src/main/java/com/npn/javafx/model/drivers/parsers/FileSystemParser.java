@@ -86,7 +86,7 @@ public class FileSystemParser implements FilesParser, VersionsParser {
     }
 
     /**
-     * Получает адрес где размещается список версий
+     * Получает адрес где размещается указанная версия
      *
      * @param version номер версии
      * @param path    адрес размещения всех версий

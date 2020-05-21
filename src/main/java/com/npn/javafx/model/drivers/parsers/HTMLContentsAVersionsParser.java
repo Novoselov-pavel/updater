@@ -55,7 +55,7 @@ public class HTMLContentsAVersionsParser implements VersionsParser, FilesParser 
     }
 
     /**
-     * Получает адрес где размещается список версий
+     * Получает адрес где размещается указанная версия
      *
      * @param version номер версии
      * @param path    адрес размещения всех версий

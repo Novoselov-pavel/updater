@@ -15,7 +15,7 @@ public interface VersionsParser {
      */
     List<String> getVersion(String path) throws Exception;
 
-    /** Получает адрес где размещается список версий
+    /** Получает адрес где размещается указанная версия
      *
      * @param version номер версии
      * @param path адрес размещения всех версий
