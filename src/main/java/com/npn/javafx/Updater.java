@@ -1,6 +1,6 @@
 package com.npn.javafx;
 
-import com.npn.javafx.controller.BashController;
+import com.npn.javafx.controller.uicontroller.BashController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

@@ -77,7 +77,7 @@ public class FileSystemParser implements FilesParser, VersionsParser {
         }
 
         for (File files : inputDir.toFile().listFiles(x-> Files.isDirectory(x.toPath())||Files.isSymbolicLink(x.toPath()))) {
-            list.add(files.toPath().toString());
+            list.add(inputDir.relativize(files.toPath()).toString());
         }
 
         logFormat = "End get version folder from\t%s";

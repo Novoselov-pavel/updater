@@ -3,7 +3,9 @@ package com.npn.javafx.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Класс описывающий версии программ в формате 01.02.03
@@ -18,12 +20,34 @@ public class Version implements Comparable<Version> {
     private int majorVersion;
     private int minorVersion;
     private int fixVersion;
+    private String stringVersion;
+
+
+    /**
+     * Возвращает список с распознанными версими из исходного списка строк
+     * все
+     *
+     * @param list
+     * @return
+     */
+    public static List<Version> getVersionsListFromStrings(List<String> list) {
+        List<Version> retList = new ArrayList<>();
+
+        list.forEach(x->{
+            try{
+                Version version = new Version(x);
+                retList.add(version);
+            } catch (IllegalArgumentException ignore) {}
+        });
+        return retList;
+    }
 
     public Version(final String version) {
         logger.debug("Version created with\t {}",version);
+        this.stringVersion = version;
         String[] strings = version.split("\\.");
         if (strings.length!=3) {
-            logger.error("Version recognize error with string\t{}",version);
+            logger.debug("Version recognize error with string\t{}",version);
             throw new IllegalArgumentException("Illegal version type, may be 01.02.03");
         }
         try {
@@ -31,7 +55,7 @@ public class Version implements Comparable<Version> {
             minorVersion = Integer.parseInt(strings[1]);
             fixVersion = Integer.parseInt(strings[2]);
         } catch (Exception e) {
-            logger.error("Version recognize error with string\t{}",version);
+            logger.debug("Version recognize error with string\t{}",version);
             throw new IllegalArgumentException("Illegal version type, may be number.number.number", e);
         }
 
@@ -51,35 +75,14 @@ public class Version implements Comparable<Version> {
 
     @Override
     public String toString() {
-        return majorVersion+"."+minorVersion+"."+fixVersion;
+        return stringVersion;
     }
 
     /**
      * Compares this object with the specified object for order.  Returns a
      * negative integer, zero, or a positive integer as this object is less
      * than, equal to, or greater than the specified object.
-     *
-     * <p>The implementor must ensure
-     * {@code sgn(x.compareTo(y)) == -sgn(y.compareTo(x))}
-     * for all {@code x} and {@code y}.  (This
-     * implies that {@code x.compareTo(y)} must throw an exception iff
-     * {@code y.compareTo(x)} throws an exception.)
-     *
-     * <p>The implementor must also ensure that the relation is transitive:
-     * {@code (x.compareTo(y) > 0 && y.compareTo(z) > 0)} implies
-     * {@code x.compareTo(z) > 0}.
-     *
-     * <p>Finally, the implementor must ensure that {@code x.compareTo(y)==0}
-     * implies that {@code sgn(x.compareTo(z)) == sgn(y.compareTo(z))}, for
-     * all {@code z}.
-     *
-     * <p>It is strongly recommended, but <i>not</i> strictly required that
-     * {@code (x.compareTo(y)==0) == (x.equals(y))}.  Generally speaking, any
-     * class that implements the {@code Comparable} interface and violates
-     * this condition should clearly indicate this fact.  The recommended
-     * language is "Note: this class has a natural ordering that is
-     * inconsistent with equals."
-     *
+     *<p></p>
      * <p>In the foregoing description, the notation
      * {@code sgn(}<i>expression</i>{@code )} designates the mathematical
      * <i>signum</i> function, which is defined to return one of {@code -1},
@@ -121,4 +124,20 @@ public class Version implements Comparable<Version> {
 
         return 0;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Version version = (Version) o;
+        return majorVersion == version.majorVersion &&
+                minorVersion == version.minorVersion &&
+                fixVersion == version.fixVersion;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(majorVersion, minorVersion, fixVersion);
+    }
+
 }

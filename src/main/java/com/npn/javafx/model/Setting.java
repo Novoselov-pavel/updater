@@ -1,11 +1,9 @@
 package com.npn.javafx.model;
 
 import com.npn.javafx.controller.ParserClassController;
-import com.npn.javafx.model.interfaces.PropertiesLoader;
-import com.npn.javafx.model.interfaces.PropertiesSaver;
-import com.npn.javafx.model.interfaces.PropertiesValidator;
-import com.npn.javafx.model.interfaces.VersionsParser;
+import com.npn.javafx.model.interfaces.*;
 
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -15,11 +13,21 @@ import java.util.Properties;
 public class Setting {
     private final Properties properties;
 
+
     public Setting(Properties properties) {
         this.properties = properties;
     }
 
-    public static Setting loadProperties(final PropertiesLoader loader, final PropertiesValidator validator, final String path) throws Exception {
+    /**
+     * Загружает настройки из файла
+     *
+     * @param loader
+     * @param validator
+     * @param path
+     * @return
+     * @throws Exception
+     */
+    public static Setting loadSetting(final PropertiesLoader loader, final PropertiesValidator validator, final String path) throws Exception {
         Properties properties = loader.loadProperties(path);
         if (validator.isPropertiesValid(properties)) {
             Setting setting = new Setting(properties);
@@ -29,7 +37,6 @@ public class Setting {
         }
     }
 
-
     /**
      * Сохраняет настройки в файле
      *
@@ -37,7 +44,7 @@ public class Setting {
      * @param path путь сохранения в файл
      * @throws Exception при ошибках
      */
-    public void saveProperties(final PropertiesSaver saver, final String path) throws Exception {
+    public void saveSetting(final PropertiesSaver saver, final String path) throws Exception {
         saver.saveProperties(properties,path);
     }
 
@@ -79,7 +86,7 @@ public class Setting {
     }
 
     /**
-     * Устанавливает парсер для поиска файлов в настройки программы
+     * Устанавливает парсер для поиска папки обновления (корневого каталога) в настройки программы
      *
      * @param value DirParserEnum
      */
@@ -90,11 +97,94 @@ public class Setting {
         properties.setProperty(key,value.getXmlParserName());
     }
 
+    /**
+     * Получает экземпляр имплементирующий FilesParser из properties
+     *
+     * @return {@link FilesParser} или null, если оно не найдено
+     */
+    public FilesParser getFileParser() {
+        String property = getProperty(PropertiesEnum.FILE_PARSER_NAME);
+        if (property==null) return null;
+        FilesParserEnum parserEnum = FilesParserEnum.getEnum(property);
+        if (parserEnum==null) return null;
+        return ParserClassController.getFileParser(parserEnum);
+    }
 
 
-    ///TODO геттеры и сеттеры для всех свойств
+    /**
+     * Устанавливает парсер для поиска файлов в папке обновления в настройки программы
+     *
+     * @param value DirParserEnum
+     */
+    public void setFileParser(FilesParserEnum value) {
+        if (value==null) return;
+        String key = getKey(PropertiesEnum.FILE_PARSER_NAME);
+        key = key==null? PropertiesEnum.FILE_PARSER_NAME.toString():key;
+        properties.setProperty(key,value.getXmlParserName());
+    }
 
+    /**
+     * Получает расположение директории с версиями программы
+     *
+     * @return путь или null, если данный параметр не задан
+     */
+    public String getLocation() {
+        return  getProperty(PropertiesEnum.UPDATE_LOCATION);
+    }
 
+    /**
+     * Устанавливает расположение директории с версиями программы в настройки программы
+     *
+     * @param location
+     */
+    public void setLocation(String location) {
+        if (location==null) return;
+        String key = getKey(PropertiesEnum.UPDATE_LOCATION);
+        key = key==null? PropertiesEnum.UPDATE_LOCATION.toString():key;
+        properties.setProperty(key,location);
+    }
+
+    /**
+     * Получает имя INI файла обновления
+     *
+     * @return имя INI файла
+     */
+    public String getIniFileName() {
+        return getProperty(PropertiesEnum.INI_FILE_NAME);
+    }
+
+    /**
+     * Устанавливает имя INI файла обновления в настройки программы
+     *
+     * @param iniFileName имя INI файла обновления
+     */
+    public void setIniFileName(String iniFileName) {
+        if (iniFileName==null) return;
+        String key = getKey(PropertiesEnum.INI_FILE_NAME);
+        key = key==null? PropertiesEnum.INI_FILE_NAME.toString():key;
+        properties.setProperty(key,iniFileName);
+    }
+
+    /**
+     * Получает имя запускаемого после обновления файла
+     *
+     * @return имя запускаемого файла
+     */
+    public String getExeFileName() {
+        return getProperty(PropertiesEnum.EXE_FILE_NAME);
+    }
+
+    /**
+     * Устанавливает имя запускаемого после обновления файла
+     *
+     * @param exeFileName имя запускаемого файла
+     */
+    public void setExeFileName(String exeFileName) {
+        if (exeFileName==null) return;
+        String key = getKey(PropertiesEnum.EXE_FILE_NAME);
+        key = key==null? PropertiesEnum.EXE_FILE_NAME.toString():key;
+        properties.setProperty(key,exeFileName);
+    }
 
     /**
      * Получает значение из properties
@@ -124,6 +214,16 @@ public class Setting {
         return key;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Setting setting = (Setting) o;
+        return Objects.equals(properties, setting.properties);
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(properties);
+    }
 }

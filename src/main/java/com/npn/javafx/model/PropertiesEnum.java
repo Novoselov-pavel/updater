@@ -6,7 +6,7 @@ public enum PropertiesEnum {
     FILE_PARSER_NAME("наименование парсера для поиска файлов", true),
     UPDATE_LOCATION("расположение директории с версиями", true),
     INI_FILE_NAME("имя INI файла обновления", true),
-    EXECUTION_FILE_NAME("имя файла программы которую надо запустить после обновления", false);
+    EXE_FILE_NAME("имя файла программы которую надо запустить после обновления", false);
 
 
     /**конструктор
