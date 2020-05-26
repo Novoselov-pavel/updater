@@ -102,6 +102,13 @@
             <artifactId>jaxb-impl</artifactId>
             <version>3.0.0-M2</version>
         </dependency>
+        <!-- библиотека работы с потоками, более удобная чем стандартная-->
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>29.0-jre</version>
+        </dependency>
     </dependencies>
 
     <build>

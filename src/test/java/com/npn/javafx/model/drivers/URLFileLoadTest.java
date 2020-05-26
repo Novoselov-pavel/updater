@@ -1,8 +1,11 @@
 package com.npn.javafx.model.drivers;
 
+import com.npn.javafx.model.CRC32Calculator;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,17 +14,54 @@ import static org.junit.jupiter.api.Assertions.*;
 class URLFileLoadTest {
 
     @Test
-    void call() {
+    void uriFromHttp() {
         try {
             URLFileLoad<Path> urlFileLoad = new URLFileLoad<>("https://yadi.sk/i/_SPQS2I0T2-xiw");
             ExecutorService executorService = Executors.newFixedThreadPool(2);
             Future<Path> future = executorService.submit(urlFileLoad);
             Path path = future.get();
             executorService.shutdownNow();
-            System.out.println(path.toString());
+            Files.deleteIfExists(path);
+
         } catch (Exception e) {
+            e.printStackTrace();
             fail();
         }
 
+    }
+
+    @Test
+    void uriFromPath() {
+        try {
+            ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+            String path1 = "/home/pavel/IdeaProjects/javafx/updater/src/test/versionsFolder/00.00.01/Human.java";
+            String path2 = "/home/pavel/IdeaProjects/javafx/updater/src/test/versionsFolder/00.00.01/йййыйуцаеп/apache-tomcat-9.0.34-deployer.tar.gz";
+
+            URLFileLoad<Path> urlFileLoad1 = new URLFileLoad<>(path1);
+            URLFileLoad<Path> urlFileLoad2 = new URLFileLoad<>(path2);
+
+            Future<Path> future1 = executorService.submit(urlFileLoad1);
+            Future<Path> future2 = executorService.submit(urlFileLoad2);
+
+            Path copyFile1 = future1.get();
+            Path copyFile2 = future2.get();
+            executorService.shutdownNow();
+
+            CRC32Calculator crc32Calculator = new CRC32Calculator();
+
+            assertEquals(crc32Calculator.getCRC32(Paths.get(path1)),
+                    crc32Calculator.getCRC32(copyFile1));
+            assertEquals(crc32Calculator.getCRC32(Paths.get(path2)),
+                    crc32Calculator.getCRC32(copyFile2));
+
+            Files.deleteIfExists(copyFile1);
+            Files.deleteIfExists(copyFile2);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 }
