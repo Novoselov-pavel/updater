@@ -25,6 +25,13 @@ public class FileItem {
     @XmlElement
     private boolean unpack;
 
+    /**
+     * Путь к файлу упаковки
+     */
+    @XmlElement
+    @XmlJavaTypeAdapter(PathAdapter.class)
+    private Path unpackPath;
+
     private FileItem() {
         path = null;
     }
@@ -60,7 +67,13 @@ public class FileItem {
         this.unpack = unpack;
     }
 
+    public Path getUnpackPath() {
+        return unpackPath;
+    }
 
+    public void setUnpackPath(Path unpackPath) {
+        this.unpackPath = unpackPath;
+    }
 
     public FileItem copyWithNewPath(final Path newPath) {
 
@@ -80,22 +93,21 @@ public class FileItem {
     }
 
 
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FileItem item = (FileItem) o;
         return CRC32 == item.CRC32 &&
-                Objects.equals(path, item.path);
+                unpack == item.unpack &&
+                Objects.equals(path, item.path) &&
+                Objects.equals(unpackPath, item.unpackPath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, CRC32);
+        return Objects.hash(path, CRC32, unpack, unpackPath);
     }
-
 
     private static class PathAdapter extends XmlAdapter<String, Object> {
 

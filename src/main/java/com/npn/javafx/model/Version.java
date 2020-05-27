@@ -1,9 +1,11 @@
 package com.npn.javafx.model;
 
+import com.npn.javafx.model.interfaces.VersionsParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,13 +26,31 @@ public class Version implements Comparable<Version> {
 
 
     /**
+     * Возвращает список версий в соответствии с настройками приложения
+     *
+     * @param setting настройки приложения
+     * @return  List<Version> упорядоченные от младшей версии к старшей
+     * @throws Exception при ошибкеж
+     */
+    public static List<Version> getVersionsFromSettings(Setting setting) throws Exception {
+        logger.debug("getVersionsFromSettings");
+        logger.info("Getting version list from setting");
+        VersionsParser parser = setting.getVersionParser();
+        List<String> versionsStringList = parser.getVersion(setting.getLocation());
+        List<Version> list = Version.getVersionsListFromStrings(versionsStringList);
+        list.sort(Comparator.naturalOrder());
+        return list;
+    }
+
+    /**
      * Возвращает список с распознанными версими из исходного списка строк
      * все
      *
      * @param list
      * @return
      */
-    public static List<Version> getVersionsListFromStrings(List<String> list) {
+    private static List<Version> getVersionsListFromStrings(List<String> list) {
+        logger.debug("getVersionsListFromStrings");
         List<Version> retList = new ArrayList<>();
 
         list.forEach(x->{

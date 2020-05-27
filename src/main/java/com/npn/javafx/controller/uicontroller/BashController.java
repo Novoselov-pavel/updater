@@ -1,6 +1,7 @@
 package com.npn.javafx.controller.uicontroller;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.npn.javafx.model.IniClass;
 import com.npn.javafx.model.Setting;
 import com.npn.javafx.model.Version;
 import com.npn.javafx.model.drivers.PropertiesXmlDriver;
@@ -19,9 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -31,7 +30,6 @@ public class BashController {
     private static final Logger logger = LoggerFactory.getLogger(BashController.class);
     protected static final String NEW_VERSION_NOT_FOUND_ANSWER = "no";
     protected static final String AUTO_MODE_CONSOLE_PARAMETER = "no";
-    private static final long SLEEP_TIME_MS = 50;
 
 
     private final String[] args;
@@ -80,20 +78,17 @@ public class BashController {
 
         PropertiesLoader loader = new PropertiesXmlDriver();
         PropertiesValidator validator = new PropertiesValidatorByEnum();
+
         Setting setting = Setting.loadSetting(loader,validator,path);
 
-        VersionsParser parser = setting.getVersionParser();
-        List<String> versionsStringList = parser.getVersion(setting.getLocation());
-        List<Version> versionsList = Version.getVersionsListFromStrings(versionsStringList);
+        List<Version> versionsList = Version.getVersionsFromSettings(setting);
 
 
         if (versionsList.size()>0) {
-            versionsList.sort(Comparator.naturalOrder());
             Version lastVersion = versionsList.get(versionsList.size()-1);
             int compare = setting.getVersion().compareTo(lastVersion);
 
             if (compare<0) {
-
                 logger.info("Last version \t{}",lastVersion.toString());
                 UiConsole.println(lastVersion.toString());
                 return lastVersion.toString();
@@ -120,36 +115,36 @@ public class BashController {
             utfVersion = search(path);
         }
         Version neededVersion = new Version(utfVersion);
-        PropertiesLoader loader = new PropertiesXmlDriver();
 
+        PropertiesLoader loader = new PropertiesXmlDriver();
         PropertiesValidator validator = new PropertiesValidatorByEnum();
         Setting setting = Setting.loadSetting(loader,validator,path);
 
         FilesParser filesParser = setting.getFileParser();
-        List<String> files = filesParser.getFilesAddress(setting.getVersionParser().getAddress(neededVersion.toString(),
+        List<String> filesAddress = filesParser.getFilesAddress(setting.getVersionParser().getAddress(neededVersion.toString(),
                 setting.getLocation()));
 
-        int maxExecutorProcess = Math.min(Math.max(files.size() / 15, 4),15);
-        ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setNameFormat("fileLoading with URLFileLoad-%d")
-                .setDaemon(false)
-                .build();
-        ExecutorService executorService = Executors.newFixedThreadPool(maxExecutorProcess,threadFactory);
+        Map<Path, Path> files = URLFileLoad.loadFiles(filesAddress);
 
-        List<Future<Path>> futureList = new ArrayList<>();
+        Path iniFile = IniClass.getIniFile(setting,files);
 
-        for (String file : files) {
-            futureList.add(executorService.submit(new URLFileLoad<Path>(file)));
-        }
-        ///TODO выполнить рефракторинг
 
-        ///TODO проверить как это работает в реальности
-        completeAllFutures(futureList);
-        executorService.shutdown();
+
+
+
+
+        ///TODO подключить функцию IniClass.proceedIniFile
 
 
 
     }
+
+
+
+
+
+
+
 
 
     /**
@@ -173,37 +168,6 @@ public class BashController {
 
         String retVal = new String(string.getBytes(conEnd), StandardCharsets.UTF_8);
         return retVal;
-    }
-
-    /**
-     * Проверяет закончена ли закачка файлов, а также прерывает выполнение всех потоков если остановлен текущий поток
-     *
-     * @param futures список Future
-     * @throws InterruptedException при прерывании основного потока
-     */
-    private void completeAllFutures(List<Future<Path>> futures) throws InterruptedException {
-        while (true) {
-            boolean isComplete = true;
-            for (Future future : futures) {
-                if (!future.isDone()) {
-                    isComplete = false;
-                }
-            }
-
-            if (isComplete) {
-                return;
-            } else {
-                try {
-                    Thread.sleep(SLEEP_TIME_MS);
-                } catch (InterruptedException e) {
-                    futures.forEach(Future::isCancelled);
-                    throw e;
-                }
-            }
-
-
-        }
-
     }
 
 

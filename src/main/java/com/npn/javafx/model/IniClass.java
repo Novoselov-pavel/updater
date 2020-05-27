@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,31 @@ public class IniClass {
     public IniClass() {
 
     }
+
+    /**
+     * Получение ini файла который определен в
+     *
+     * @param setting настройки программы
+     * @param map мапа из адресов исходных файлов и скаченных временных
+     * @return Path скаченного временного файла или null если не найден.
+     */
+    public static Path getIniFile (Setting setting, Map<Path, Path> map) {
+        logger.debug("getIniFile");
+        logger.info("Get iniFile from map");
+        String iniFileName = setting.getIniFileName();
+        Map.Entry<Path,Path> entry = map.entrySet().stream()
+                .filter(x-> x.getKey().getFileName().equals(Paths.get(iniFileName)))
+                .findFirst().orElse(null);
+
+        if (entry==null) return null;
+        return entry.getValue();
+    }
+
+
+    public static void proceedIniFile(Path iniFile) {
+        ///TODO остановился тут
+    }
+
 
     /**Загружает IniClass из XML файла
      *

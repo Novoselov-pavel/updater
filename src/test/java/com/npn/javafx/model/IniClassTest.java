@@ -1,11 +1,16 @@
 package com.npn.javafx.model;
 
+import com.npn.javafx.model.drivers.PropertiesXmlDriver;
+import com.npn.javafx.model.validators.PropertiesValidatorByEnum;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,10 +47,12 @@ class IniClassTest {
         FileItem fileItem1 = new FileItem(firstItem);
         fileItem1.setCRC32(crc32Calculator.getCRC32(firstItem));
         fileItem1.setUnpack(false);
+        fileItem1.setUnpackPath(Paths.get("Carlson.java"));
 
         FileItem fileItem2 = new FileItem(secondItem);
         fileItem2.setCRC32(crc32Calculator.getCRC32(secondItem));
         fileItem2.setUnpack(false);
+        fileItem2.setUnpackPath(Paths.get("Human.java"));
 
         iniClass.addFileItem(fileItem1);
         iniClass.addFileItem(fileItem2);
@@ -64,5 +71,29 @@ class IniClassTest {
             e.printStackTrace();
             fail();
         }
+    }
+
+    @Test
+    void getIniFile() {
+        String path ="/home/pavel/IdeaProjects/javafx/updater/src/test/versionsFolder/fileUpdateSetting_getIniFileTest.xml";
+        Map<Path, Path> map = new HashMap<>();
+        Path key1 = Paths.get("/home/pavel/IdeaProjects/javafx/updater/src/test/versionsFolder/00.00.01/Carlson.java");
+        Path key2 = Paths.get("/home/pavel/IdeaProjects/javafx/updater/src/test/versionsFolder/00.00.01/iniFile.xml");
+        Path value1 = Paths.get("00.tmp");
+        Path value2 = Paths.get("01.tmp");
+
+        map.put(key1,value1);
+        map.put(key2,value2);
+
+
+        try {
+            Setting setting = Setting.loadSetting(new PropertiesXmlDriver(),new PropertiesValidatorByEnum(),path);
+            assertEquals(IniClass.getIniFile(setting,map),value2);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+
+
     }
 }

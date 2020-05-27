@@ -3,9 +3,13 @@ package com.npn.javafx.model.drivers;
 import com.npn.javafx.model.CRC32Calculator;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,5 +67,38 @@ class URLFileLoadTest {
             e.printStackTrace();
             fail();
         }
+    }
+
+    @Test
+    void loadFiles() {
+        String path1 = "/home/pavel/IdeaProjects/javafx/updater/src/test/versionsFolder/00.00.01/Human.java";
+        String path2 = "/home/pavel/IdeaProjects/javafx/updater/src/test/versionsFolder/00.00.01/йййыйуцаеп/apache-tomcat-9.0.34-deployer.tar.gz";
+        List<String> inputList = new ArrayList<>();
+        inputList.add(path1);
+        inputList.add(path2);
+
+        try {
+            Map<Path,Path> map = URLFileLoad.loadFiles(inputList);
+            CRC32Calculator crc32Calculator = new CRC32Calculator();
+
+            assertEquals(map.size(),2);
+            for (Map.Entry<Path, Path> entry : map.entrySet()) {
+                assertEquals(crc32Calculator.getCRC32(entry.getKey()), crc32Calculator.getCRC32(entry.getValue()));
+            }
+
+            for (Map.Entry<Path, Path> entry : map.entrySet()) {
+                try {
+                    Files.deleteIfExists(entry.getValue());
+                } catch (IOException ignore) {
+
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
+
+
     }
 }
