@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +29,8 @@ class SafeCopyFilesTest {
         List<Path> sourceFiles;
         List<Path> destinationFiles;
 
+        Map<Path, Path> map = new HashMap<>();
+
         sourceFiles = FileUtils
                             .listFiles(inputPath.toFile(),null,true)
                             .stream()
@@ -38,8 +42,12 @@ class SafeCopyFilesTest {
                                 .map(x->outputPath.resolve(x))
                                 .collect(Collectors.toList());
 
+        for (int i = 0; i <sourceFiles.size(); i++) {
+            map.put(sourceFiles.get(i), destinationFiles.get(i));
+        }
 
-        SafeCopyFiles files = new SafeCopyFiles(sourceFiles, destinationFiles);
+
+        SafeCopyFiles files = new SafeCopyFiles(map);
         files.run();
         CRC32Calculator crc32Calculator = new CRC32Calculator();
         try {

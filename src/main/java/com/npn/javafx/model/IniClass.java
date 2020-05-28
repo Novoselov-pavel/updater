@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**Класс работающий с ini файлом обновления
  *
@@ -53,7 +50,29 @@ public class IniClass {
     }
 
 
-    public static void proceedIniFile(Path iniFile) {
+    /**
+     * функция обновления по ini файлу
+     *
+     * @param iniFile адрес скачанного ini файла
+     * @param map мапа со скачанными файлами, ключ - адрес файла на сервере/исходной папке, значение - адрес временного файла
+     * @param basePath путь куда распаковывается содержимое согласно Ini файлу
+     * @param tempFolder адрес временной папки
+     * @throws Exception
+     */
+    public static void proceedIniFile(Path iniFile, Map<Path, Path> map, Path basePath, Path tempFolder) throws Exception {
+        IniClass iniClass = IniClass.loadFromXmlFile(iniFile);
+
+        List<Path> sourceFiles = new ArrayList<>();
+
+        iniClass.getFileItems().forEach(x->{
+            if (!x.isUnpack()) {
+
+            }
+
+
+
+        });
+
         ///TODO остановился тут
     }
 
@@ -87,6 +106,10 @@ public class IniClass {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         marshaller.marshal(this,path.toFile());
         logger.info("End save IniClass to\t{}",path.toString());
+    }
+
+    public List<FileItem> getFileItems() {
+        return Collections.unmodifiableList(fileItems);
     }
 
     /** Добавляет FileItem в список

@@ -9,19 +9,19 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-/**Безопасное копирование файлов из адресов исходного списка в адреса итогового списка.
- * ИНДЕКСЫ СООТВЕСТВУЮЩИХ ФАЙЛОВ ДОЛЖНЫ СОВПАДАТЬ В ПЕРЕДАННЫХ В КОНСТРУКТОРЕ СПИСКАХ
+/**Безопасное копирование файлов согласно Map ключ - откуда копировать файл, значение - куда копировать файл
  *
  */
 public class SafeCopyFiles extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(SafeCopyFiles.class);
 
-    private final List<Path> sourceFiles;
-    private final List<Path> destinationFiles;
+    private final Map<Path,Path> files;
 
     ///Задержка при попытке неудачного копирования (мс)
     private static final int DELAY = 20000;
@@ -31,28 +31,24 @@ public class SafeCopyFiles extends Thread {
 
     /**Конструктор безопасного копирования файлов из адресов исходного списка в адреса итогового списка.
      *
-     * @param sourceFiles исходный список, индексы соответсвующих файлов исходного списка и итогового должны совпадать.
-     * @param destinationFiles итоговый список файлов.
+     * @param files Map ключ - откуда копировать файл, значение - куда копировать файл
      */
-    public SafeCopyFiles(final List<Path> sourceFiles,final List<Path> destinationFiles) {
-        if (sourceFiles == null || destinationFiles == null || sourceFiles.size()!=destinationFiles.size()) {
-            throw new IllegalArgumentException("SafeCopy's input lists is null or different size");
+    public SafeCopyFiles(final Map<Path,Path> files) {
+        if (files == null) {
+            throw new IllegalArgumentException("SafeCopy's input map is null");
         }
-        this.sourceFiles = sourceFiles;
-        this.destinationFiles = destinationFiles;
+        this.files = files;
     }
 
     /** Безопасное копирование файлов из адресов исходного списка в адреса итогового списка.
      *
-     * @throws SafeCopyFilesException,  при ошибке копирования
-     * @see #start()
-     * @see #stop()
+     * @throws SafeCopyFilesException,  при ошибке копирования     *
      */
     @Override
     public void run() {
         String logFormat = "SafeCopyFiles start";
         logger.debug(logFormat);
-        List<Path> tempList = null;
+        Map<Path,Path> tempMap = null;
 
         logFormat = "Start copy files";
         logger.info(logFormat);
@@ -63,9 +59,9 @@ public class SafeCopyFiles extends Thread {
                     Thread.sleep(DELAY);
 
                 try{
-                    tempList = createTempList(destinationFiles);
-                    List<Path> finalTempList = tempList;
-                    copyIfExist(destinationFiles,tempList);
+                    tempMap = createTempMap(files);
+                    copyIfExist(tempMap);
+
                 } catch (IOException e) {
                     if (i==MAX_ITERATION-1) {
                         throw new FailUpdateFiles("Error at creating temp files", e);
@@ -77,13 +73,13 @@ public class SafeCopyFiles extends Thread {
                     throw new InterruptedException();
 
                 try {
-                    copyFiles(sourceFiles,destinationFiles);
+                    copyFiles(files);
                 } catch (IOException e) {
                     if (i==MAX_ITERATION-1) {
                         try {
-                            copyIfExist(tempList,destinationFiles);
+                            copyIfExist(tempMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue,Map.Entry::getKey)));
                         } catch (IOException rollbackException) {
-                            throw new SafeCopyFilesException("Fatal Error on safe copy files\nOriginal files:\n" + pathListToString(tempList),rollbackException);
+                            throw new SafeCopyFilesException("Fatal Error on safe copy files\nOriginal files:\n" + pathMapToString(tempMap),rollbackException);
                         }
                         throw new FailUpdateFiles("Error at copy temp files", e);
                     }
@@ -99,7 +95,7 @@ public class SafeCopyFiles extends Thread {
             }
 
         } catch (InterruptedException e) {
-            deleteFiles(tempList);
+            deleteFiles(tempMap.values());
             logFormat = "SafeCopyFiles interrupted";
             logger.debug(logFormat);
             return;
@@ -111,23 +107,24 @@ public class SafeCopyFiles extends Thread {
 
     /**Создает список путей для временных файлов
      *
-     * @param sourceFiles список исходных файлов
-     * @return список
+     * @param map Map для создания копии заменяемых файлов
+     * @return Map где ключ - исходные файлы, значение - временные файлы
      * @throws IOException
      * @throws InterruptedException
      */
-    private List<Path> createTempList(final List<Path> sourceFiles) throws IOException, InterruptedException {
+    private Map<Path,Path> createTempMap(final Map<Path, Path> map) throws IOException, InterruptedException {
         String logFormat = "createTempList start";
         logger.debug(logFormat);
         if (!isInterrupted()) {
-            List<Path> returnList = new ArrayList<>();
-                for (Path sourceFile : sourceFiles) {
+            Map<Path,Path> retMap = new HashMap<>();
+
+                for (Path sourceFile : map.values()) {
                     Path path = Files.createTempFile(sourceFile.getFileName().toString(),null);
-                    returnList.add(path);
+                    retMap.put(sourceFile,path);
                 }
              logFormat = "createTempList end";
              logger.debug(logFormat);
-             return returnList;
+             return retMap;
         }
         throw new InterruptedException();
     }
@@ -135,21 +132,21 @@ public class SafeCopyFiles extends Thread {
 
     /**Копирует файлы из адресов исходного списка в адреса итогового списка.
      *
-     * @param sourceFiles исходный список, индексы соответсвующих файлов исходного списка и итогового должны совпадапть.
-     * @param destinationFiles итоговый список файлов.
-     * @return true сли копирование прошло успешно.
+     * @param files Map ключ - откуда копировать файл, значение - куда копировать файл
+     * @return true если копирование прошло успешно.
      */
-    private void copyFiles(final List<Path> sourceFiles,final List<Path> destinationFiles) throws IOException {
+    private void copyFiles(final Map<Path,Path> files) throws IOException {
         String logFormat = "copyFiles start";
         logger.debug(logFormat);
 
-        if (sourceFiles == null || (destinationFiles!=null && sourceFiles.size()!=destinationFiles.size())) {
+        if (files == null) {
             throw new IllegalArgumentException();
         }
 
-        for (int i = 0; i < sourceFiles.size(); i++) {
-            copyFile(sourceFiles.get(i),destinationFiles.get(i));
+        for (Map.Entry<Path, Path> entry : files.entrySet()) {
+            copyFile(entry.getKey(),entry.getValue());
         }
+
         logFormat = "copyFiles end";
         logger.debug(logFormat);
     }
@@ -165,20 +162,21 @@ public class SafeCopyFiles extends Thread {
 
     /**Переводит список путей в строку
      *
-     * @param sourceFiles
+     * @param map files Map ключ - откуда копировать файл, значение - куда копировать файл
      * @return
      */
-    private String pathListToString(final List<Path> sourceFiles) {
+    private String pathMapToString(final Map<Path,Path> map) {
         StringBuilder builder = new StringBuilder();
-        for (Path sourceFile : sourceFiles) {
-            builder.append(sourceFile.toString()).append("\n");
+
+        for (Map.Entry<Path, Path> entry : map.entrySet()) {
+            builder.append("old file: ").append(entry.getKey()).append("\t").append("saved copy: ").append(entry.getValue()).append("\n");
         }
         return builder.toString();
     }
 
     /**Удаляет все файлы по списку     *
      */
-    private void deleteFiles(List<Path> list) {
+    private void deleteFiles(Collection<Path> list) {
         if (list==null) return;
 
         for (Path path : list) {
@@ -186,16 +184,12 @@ public class SafeCopyFiles extends Thread {
         }
     }
 
-    private void copyIfExist(final List<Path> sourceFiles,final List<Path> destinationFiles) throws IOException {
-        List<Path> sourceFilteredList = sourceFiles.stream().filter(Files::exists).collect(Collectors.toList());
+    private void copyIfExist(final Map<Path,Path> files) throws IOException {
 
-        if (sourceFilteredList.size() ==0) return;
+        Map<Path,Path> map = files.entrySet().stream().filter(x->Files.exists(x.getKey())).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
+        if (map.size() ==0) return;
 
-        List<Path> destinationFilteredList = sourceFilteredList
-                                                        .stream()
-                                                        .map(x->destinationFiles.get(sourceFiles.indexOf(x)))
-                                                        .collect(Collectors.toList());
-        copyFiles(sourceFilteredList, destinationFilteredList);
+        copyFiles(map);
     }
 
 }

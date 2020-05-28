@@ -17,6 +17,10 @@ import java.util.Objects;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileItem {
     private static final Logger logger = LoggerFactory.getLogger(FileItem.class);
+
+    /**
+     * в ini файле обновления имя файла
+     */
     @XmlElement
     @XmlJavaTypeAdapter(PathAdapter.class)
     private final Path path;
@@ -26,7 +30,7 @@ public class FileItem {
     private boolean unpack;
 
     /**
-     * Путь к файлу упаковки
+     * в ini файле обновления относительный адрекс, куда должен распаковываться файл
      */
     @XmlElement
     @XmlJavaTypeAdapter(PathAdapter.class)

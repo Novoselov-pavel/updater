@@ -38,7 +38,6 @@ class SettingTest {
             e.printStackTrace();
             fail();
         }
-        ///TODO
     }
 
 
