@@ -5,6 +5,8 @@ import com.npn.javafx.model.interfaces.PropertiesSaver;
 import com.npn.javafx.model.validators.PropertiesValidatorByEnum;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,5 +49,15 @@ class SettingTest {
         assertTrue(FilesParserEnum.FILE_SYSTEM.getAssociatedClass().isInstance(setting.getFileParser()));
         assertTrue(DirParserEnum.FILE_SYSTEM.getAssociatedClass().isInstance(setting.getVersionParser()));
         assertEquals(new Version("10.0.1"),setting.getVersion());
+    }
+
+    /***
+     * Внимание, тест зависит от платформы на которой запускается
+     *
+     */
+    @Test
+    void getConsoleCharset() {
+        Charset charset = Setting.getConsoleCharset();
+        assertEquals(charset, StandardCharsets.UTF_8);
     }
 }

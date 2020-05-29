@@ -1,5 +1,9 @@
 package com.npn.javafx.model;
 
+
+import com.npn.javafx.model.drivers.SafeCopyFiles;
+import com.npn.javafx.model.drivers.ZipDriver;
+import com.npn.javafx.model.exception.FailUpdateFiles;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -9,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -56,25 +62,98 @@ public class IniClass {
      * @param iniFile адрес скачанного ini файла
      * @param map мапа со скачанными файлами, ключ - адрес файла на сервере/исходной папке, значение - адрес временного файла
      * @param basePath путь куда распаковывается содержимое согласно Ini файлу
-     * @param tempFolder адрес временной папки
      * @throws Exception
      */
-    public static void proceedIniFile(Path iniFile, Map<Path, Path> map, Path basePath, Path tempFolder) throws Exception {
+    public static void proceedIniFile(Path iniFile, Map<Path, Path> map, Path basePath) throws Exception {
         IniClass iniClass = IniClass.loadFromXmlFile(iniFile);
 
         List<Path> sourceFiles = new ArrayList<>();
 
+        Map<Path,Path> copyMap = new HashMap<>();
+
         iniClass.getFileItems().forEach(x->{
-            if (!x.isUnpack()) {
-
+            if (x.needUnpack()) {
+                try {
+                    Path tempDir = Files.createTempDirectory("updater");
+                    Path file = getTempPathFromMap(x.getPath(),map);
+                    ZipDriver zipDriver =  new ZipDriver();
+                    List<FileItem> files = zipDriver.unPack(file,tempDir,Setting.getConsoleCharset());
+                    addUnpackFileToMap(copyMap, files, x,tempDir);
+                } catch (IOException e) {
+                    throw new FailUpdateFiles("Can't create temporary directory", e);
+                } catch (Exception e) {
+                    throw new FailUpdateFiles("Can't unpack file", e);
+                }
+            } else  {
+                copyMap.put(getTempPathFromMap(x.getPath(),map),x.getUnpackPath());
             }
-
-
-
         });
 
-        ///TODO остановился тут
+        SafeCopyFiles safeCopyFiles = new SafeCopyFiles(copyMap);
     }
+
+
+
+    /**
+     * Выполняет проверку целостности скаченного по ini файлу
+     *     I этап - проверка целостности скаченного
+     *     найти файл в мапе по его пути на сервере и значению path из FileItem
+     *     проверить CRC скаченного файла, если оно ошибочное в лог WARN
+     *     добавить в список перезакачки
+     *
+     * @param iniClass IniClass
+     * @param map мапа со скачанными файлами, ключ - адрес файла на сервере/исходной папке, значение - адрес временного файла
+     * @return список с файлами корые требует перезакачки, или пустой список
+     */
+    public static List<String> checkCRCStage(IniClass iniClass, Map<Path, Path> map) {
+        logger.info("Start checking CRC");
+        List<Path> retList = new ArrayList<>();
+        CRC32Calculator crc32Calculator = new CRC32Calculator();
+        iniClass.getFileItems().forEach(x->{
+            Path tempPath = getTempPathFromMap(x.getPath(),map);
+            if (tempPath == null) throw new FailUpdateFiles("File not found:\t"+x.getPath().toString()+"",null);
+            try {
+                long crc = crc32Calculator.getCRC32(tempPath);
+                if (crc != x.getCRC32()) {
+                    retList.add(x.getPath());
+                }
+            } catch (IOException e) {
+                retList.add(x.getPath());
+            }
+        });
+
+        return getFileAddressList(retList,map);
+    }
+
+    private static Map<Path,Path> addUnpackFileToMap(Map<Path,Path> map, List<FileItem> files, FileItem baseFileItem, Path zipUnpackFolder) {
+        for (FileItem item : files) {
+            Path destinationPath =baseFileItem.getUnpackPath().resolve(zipUnpackFolder.relativize(item.getPath()));
+            map.put(item.getPath(), destinationPath);
+        }
+        return map;
+    }
+
+    private static Path getTempPathFromMap(Path filename, Map<Path, Path> map){
+        for (Map.Entry<Path, Path> entry : map.entrySet()) {
+            if (entry.getKey().getFileName().equals(filename)) return entry.getValue();
+        }
+        return null;
+    }
+
+    private static List<String> getFileAddressList(List<Path> paths, Map<Path, Path> map) {
+        List<String> strings = new ArrayList<>();
+        paths.forEach(x->strings.add(getInputFileNameTempPathFromMap(x,map).toString()));
+        return strings;
+    }
+
+    private static Path getInputFileNameTempPathFromMap(Path filename, Map<Path, Path> map){
+        for (Map.Entry<Path, Path> entry : map.entrySet()) {
+            if (entry.getKey().getFileName().equals(filename)) return entry.getKey();
+        }
+        throw new FailUpdateFiles("Error in getInputFileNameTempPathFromMap", null);
+    }
+
+
 
 
     /**Загружает IniClass из XML файла

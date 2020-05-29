@@ -3,6 +3,8 @@ package com.npn.javafx.model;
 import com.npn.javafx.controller.ParserClassController;
 import com.npn.javafx.model.interfaces.*;
 
+import java.io.Console;
+import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -35,6 +37,20 @@ public class Setting {
         } else {
             throw new IllegalArgumentException("Properties file is incorrect");
         }
+    }
+
+    public static Charset getConsoleCharset() {
+        String conEnd = System.getProperty("consoleEncoding");
+        if (conEnd==null) {
+            conEnd = System.getProperty("sun.jnu.encoding");
+            if (conEnd!=null && !conEnd.toUpperCase().contains("UTF")) {
+                conEnd ="CP866";
+            }
+        }
+        if (conEnd == null)
+            conEnd ="UTF-8";
+
+        return Charset.forName(conEnd);
     }
 
     /**

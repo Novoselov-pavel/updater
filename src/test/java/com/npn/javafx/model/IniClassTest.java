@@ -96,4 +96,14 @@ class IniClassTest {
 
 
     }
+
+    @Test
+    void checkCRCStage() {
+        ///TODO  остановился тут
+    }
+
+    @Test
+    void proceedIniFile() {
+        ///TODO остановился тут
+    }
 }

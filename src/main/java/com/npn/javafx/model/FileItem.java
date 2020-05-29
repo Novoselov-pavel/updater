@@ -59,7 +59,7 @@ public class FileItem {
         return path;
     }
 
-    public boolean isUnpack() {
+    public boolean needUnpack() {
         return unpack;
     }
 

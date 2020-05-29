@@ -6,6 +6,7 @@ import com.npn.javafx.model.Setting;
 import com.npn.javafx.model.Version;
 import com.npn.javafx.model.drivers.PropertiesXmlDriver;
 import com.npn.javafx.model.drivers.URLFileLoad;
+import com.npn.javafx.model.exception.FailUpdateFiles;
 import com.npn.javafx.model.interfaces.FilesParser;
 import com.npn.javafx.model.interfaces.PropertiesLoader;
 import com.npn.javafx.model.interfaces.PropertiesValidator;
@@ -128,6 +129,23 @@ public class BashController {
 
         Path iniFile = IniClass.getIniFile(setting,files);
 
+        if (iniFile == null) {
+            throw new FailUpdateFiles("Ini file not found", null);
+        }
+
+        IniClass iniClass = IniClass.loadFromXmlFile(iniFile);
+
+        List<String> failedCRCFiles = IniClass.checkCRCStage(iniClass,files);
+
+        if (failedCRCFiles.size()>0) {
+            Map<Path, Path> reDownloadFiles = URLFileLoad.loadFiles(failedCRCFiles);
+            files.putAll(reDownloadFiles);
+            failedCRCFiles = IniClass.checkCRCStage(iniClass,files);
+            if (failedCRCFiles.size()>0) {
+                throw new  FailUpdateFiles("Files check is failed", null);
+            }
+        }
+
 
 
 
@@ -156,17 +174,7 @@ public class BashController {
      * @return строка в кодировке UTF-8
      */
     private String convertConsoleString(final String string) throws UnsupportedEncodingException {
-        String conEnd = System.getProperty("consoleEncoding");
-        if (conEnd==null) {
-            conEnd = System.getProperty("sun.jnu.encoding");
-            if (conEnd!=null && !conEnd.toUpperCase().contains("UTF")) {
-                conEnd = "CP866";
-            }
-        }
-        if (conEnd == null)
-            conEnd ="UTF-8";
-
-        String retVal = new String(string.getBytes(conEnd), StandardCharsets.UTF_8);
+        String retVal = new String(string.getBytes(Setting.getConsoleCharset()), StandardCharsets.UTF_8);
         return retVal;
     }
 
