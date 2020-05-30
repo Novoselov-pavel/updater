@@ -1,6 +1,7 @@
 package com.npn.javafx.controller.uicontroller;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.npn.javafx.Updater;
 import com.npn.javafx.model.IniClass;
 import com.npn.javafx.model.Setting;
 import com.npn.javafx.model.Version;
@@ -145,16 +146,7 @@ public class BashController {
                 throw new  FailUpdateFiles("Files check is failed", null);
             }
         }
-
-
-
-
-
-
-        ///TODO подключить функцию IniClass.proceedIniFile
-
-
-
+        IniClass.proceedIniFile(iniClass,files, Updater.JAR_FILE_PATH);
     }
 
 

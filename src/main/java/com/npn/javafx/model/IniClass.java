@@ -66,7 +66,20 @@ public class IniClass {
      */
     public static void proceedIniFile(Path iniFile, Map<Path, Path> map, Path basePath) throws Exception {
         IniClass iniClass = IniClass.loadFromXmlFile(iniFile);
+        proceedIniFile(iniClass,map,basePath);
+    }
 
+
+
+    /**
+     * функция обновления по ini классу
+     *
+     * @param iniClass IniClass
+     * @param map мапа со скачанными файлами, ключ - адрес файла на сервере/исходной папке, значение - адрес временного файла
+     * @param basePath путь куда распаковывается содержимое согласно Ini файлу
+     * @throws Exception
+     */
+    public static void proceedIniFile(IniClass iniClass, Map<Path, Path> map, Path basePath) throws Exception {
         List<Path> sourceFiles = new ArrayList<>();
 
         Map<Path,Path> copyMap = new HashMap<>();
@@ -78,20 +91,20 @@ public class IniClass {
                     Path file = getTempPathFromMap(x.getPath(),map);
                     ZipDriver zipDriver =  new ZipDriver();
                     List<FileItem> files = zipDriver.unPack(file,tempDir,Setting.getConsoleCharset());
-                    addUnpackFileToMap(copyMap, files, x,tempDir);
+                    addUnpackFileToMap(copyMap, files, x,tempDir, basePath);
                 } catch (IOException e) {
                     throw new FailUpdateFiles("Can't create temporary directory", e);
                 } catch (Exception e) {
                     throw new FailUpdateFiles("Can't unpack file", e);
                 }
             } else  {
-                copyMap.put(getTempPathFromMap(x.getPath(),map),x.getUnpackPath());
+                copyMap.put(getTempPathFromMap(x.getPath(),map),basePath.resolve(x.getUnpackPath()));
             }
         });
 
         SafeCopyFiles safeCopyFiles = new SafeCopyFiles(copyMap);
+        safeCopyFiles.run();
     }
-
 
 
     /**
@@ -125,9 +138,9 @@ public class IniClass {
         return getFileAddressList(retList,map);
     }
 
-    private static Map<Path,Path> addUnpackFileToMap(Map<Path,Path> map, List<FileItem> files, FileItem baseFileItem, Path zipUnpackFolder) {
+    private static Map<Path,Path> addUnpackFileToMap(Map<Path,Path> map, List<FileItem> files, FileItem baseFileItem, Path zipUnpackFolder, Path basePath) {
         for (FileItem item : files) {
-            Path destinationPath =baseFileItem.getUnpackPath().resolve(zipUnpackFolder.relativize(item.getPath()));
+            Path destinationPath =basePath.resolve(baseFileItem.getUnpackPath().resolve(zipUnpackFolder.relativize(item.getPath())));
             map.put(item.getPath(), destinationPath);
         }
         return map;

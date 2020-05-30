@@ -85,13 +85,15 @@ public class FileItem {
         logger.debug(String.format(logFormat,newPath.toString()));
 
         logFormat = "Start copy FileItem with path\t%s";
-        logger.info(String.format(logFormat,newPath.toString()));
+        logger.debug(String.format(logFormat,newPath.toString()));
 
         FileItem item = new FileItem(newPath);
         item.setCRC32(getCRC32());
+        item.setUnpack(needUnpack());
+        item.setUnpackPath(getUnpackPath());
 
         logFormat = "End copy FileItem with path\t%s";
-        logger.info(String.format(logFormat,newPath.toString()));
+        logger.debug(String.format(logFormat,newPath.toString()));
 
         return item;
     }

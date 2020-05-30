@@ -32,8 +32,10 @@ public class Updater extends Application {
             BashController controller = new BashController(args);
             try {
                 controller.execute();
+                System.exit(0);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(),e);
+                System.exit(1);
             }
         } else {
             launch(args);
