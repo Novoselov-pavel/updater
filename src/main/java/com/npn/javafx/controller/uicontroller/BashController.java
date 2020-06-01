@@ -112,6 +112,8 @@ public class BashController {
      * @param path путь к файлу настроек
      */
     private void updateVersion(final String version, final String path) throws Exception {
+        logger.debug("updateVersion");
+        logger.info("Start update to version\t{}\tinput file\t{}",version,path);
         String utfVersion = convertConsoleString(version);
         if (AUTO_MODE_CONSOLE_PARAMETER.equalsIgnoreCase(utfVersion)) {
             utfVersion = search(path);
@@ -147,6 +149,9 @@ public class BashController {
             }
         }
         IniClass.proceedIniFile(iniClass,files, Updater.JAR_FILE_PATH);
+        setting.setVersion(neededVersion);
+        setting.saveSetting(new PropertiesXmlDriver(),path);
+        logger.info("End update to version\t{}\tinput file\t{}",version,path);
     }
 
 

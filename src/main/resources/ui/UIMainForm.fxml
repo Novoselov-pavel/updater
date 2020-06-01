@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.text.TextFlow?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="750.0" style="-fx-background-color: #1f72bf;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UIMainFormController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="750.0" style="-fx-background-color: #1f72bf;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.npn.javafx.controller.uicontroller.UIMainFormController">
    <children>
-      <Text fill="WHITE" layoutX="72.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Updater-Administration mode" AnchorPane.topAnchor="5.0">
+      <Text fill="WHITE" layoutX="72.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Text.UpdaterAdministrationMode" AnchorPane.topAnchor="5.0">
          <font>
             <Font name="FreeSerif Bold Italic" size="23.0" />
          </font>
@@ -25,12 +19,12 @@
                     <items>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
-                              <TextFlow fx:id="textFlow" layoutX="20.0" layoutY="-52.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <TextFlow fx:id="textFlow" layoutX="20.0" layoutY="-52.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
                            </children>
                         </AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
-                              <Button fx:id="selectPathButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" text="Text.SelectPath" AnchorPane.bottomAnchor="252.0" AnchorPane.leftAnchor="31.0" AnchorPane.rightAnchor="594.0" AnchorPane.topAnchor="42.0" />
+                              <Button fx:id="selectPathButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" onMouseClicked="#selectBasePath" text="%Text.SelectPath" AnchorPane.bottomAnchor="252.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="580.0" AnchorPane.topAnchor="42.0" />
                               <TextArea fx:id="textPathArray" layoutX="173.0" layoutY="-47.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="220.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                               <ListView fx:id="listView" focusTraversable="false" layoutX="71.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
                            </children>
@@ -43,27 +37,27 @@
                <children>
                   <ButtonBar fx:id="buttonBar" layoutX="174.0" layoutY="14.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <buttons>
-                      <Button fx:id="buttonHelp" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="Text.Help" translateX="-10.0">
+                      <Button fx:id="buttonHelp" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="%Text.Help" translateX="-10.0">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Button>
-                        <Button fx:id="buttonBack" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="Text.Back" translateX="-10.0">
+                        <Button fx:id="buttonBack" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="%Text.Back" translateX="-10.0">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Button>
-                        <Button fx:id="buttonNext" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="Text.Next" translateX="-10.0">
+                        <Button fx:id="buttonNext" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="%Text.Next" translateX="-10.0">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Button>
-                        <Button fx:id="buttonOk" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="Text.OK" translateX="-10.0">
+                        <Button fx:id="buttonOk" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="%Text.OK" translateX="-10.0">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Button>
-                        <Button fx:id="buttonExit" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="Text.Exit" translateX="-10.0">
+                        <Button fx:id="buttonExit" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="%Text.Exit" translateX="-10.0">
                            <font>
                               <Font size="14.0" />
                            </font>

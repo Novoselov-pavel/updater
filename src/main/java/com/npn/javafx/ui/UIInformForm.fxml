@@ -15,7 +15,7 @@
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <Button fx:id="buttonOk" layoutX="166.0" layoutY="15.0" mnemonicParsing="false" text="Text.OK" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" />
+                  <Button fx:id="buttonOk" layoutX="166.0" layoutY="15.0" mnemonicParsing="false" text="%Text.OK" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="200.0" />
                </children>
             </AnchorPane>
         </items>
