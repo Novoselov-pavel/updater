@@ -1,31 +1,41 @@
 package com.npn.javafx.controller.uicontroller;
 
+        import com.npn.javafx.Updater;
+        import com.npn.javafx.ui.FileItemTableView;
+        import com.npn.javafx.ui.TableFileItem;
+        import com.npn.javafx.ui.checkers.IsStringDirPath;
+        import com.npn.javafx.ui.eventhandler.TextAreaCheck;
         import com.npn.javafx.model.MainFormStage;
+        import javafx.application.Platform;
         import javafx.collections.ObservableList;
+        import javafx.event.ActionEvent;
+        import javafx.event.EventHandler;
         import javafx.fxml.FXML;
-        import javafx.scene.control.Button;
-        import javafx.scene.control.ButtonBar;
-        import javafx.scene.control.ListView;
-        import javafx.scene.control.TextArea;
+        import javafx.scene.control.*;
+        import javafx.scene.input.KeyEvent;
         import javafx.scene.paint.Color;
         import javafx.scene.text.Font;
         import javafx.scene.text.FontPosture;
         import javafx.scene.text.Text;
         import javafx.scene.text.TextFlow;
-        import javafx.stage.FileChooser;
+        import javafx.stage.DirectoryChooser;
         import javafx.stage.Stage;
 
-        import java.net.URL;
-        import java.net.URLClassLoader;
+
+        import java.io.File;
+        import java.nio.file.Path;
+        import java.nio.file.Paths;
         import java.util.Locale;
         import java.util.ResourceBundle;
 
 
 public class UIMainFormController {
+    private File openFileDialogIniFolder = Updater.JAR_FILE_PATH.toFile();
     private MainFormStage stage = MainFormStage.SELECT_BASE_PATH;
     private ResourceBundle resourceBundle = ResourceBundle.getBundle("ui.uimainlocale",
             Locale.getDefault());
     private Stage mainWindows;
+    private Path basePath;
 
     public UIMainFormController() {
     }
@@ -38,9 +48,6 @@ public class UIMainFormController {
 
     @FXML
     private TextArea textPathArray;
-
-    @FXML
-    private ListView<?> listView;
 
     @FXML
     private ButtonBar buttonBar;
@@ -60,9 +67,24 @@ public class UIMainFormController {
     @FXML
     private Button buttonExit;
 
+    @FXML
+    private TableView<TableFileItem> fileTable;
+
+    @FXML
+    private Button addDirToFileTable;
+
+    @FXML
+    private Button addFileToFileTable;
+
+
     public void init(Stage mainWindows) {
         this.mainWindows = mainWindows;
         changeStage(MainFormStage.SELECT_BASE_PATH);
+        buttonExit.setOnAction(e-> Platform.exit());
+        FileItemTableView table = new FileItemTableView(fileTable,resourceBundle);
+        table.init();
+        buttonBack.setOnAction(new ButtonBackPress());
+        buttonNext.setOnAction(new ButtonNextPress());
     }
 
     public void changeStage(MainFormStage stage) {
@@ -71,25 +93,81 @@ public class UIMainFormController {
         }
         if (stage==MainFormStage.SELECT_BASE_PATH) {
             firstStageView();
+        } else if (stage == MainFormStage.SELECT_FILE) {
+            secondStage();
         }
     }
 
     private void firstStageView() {
+        fileTable.setVisible(false);
+        addDirToFileTable.setVisible(false);
+        addFileToFileTable.setVisible(false);
+
         Text text = new Text(resourceBundle.getString("SELECT_BASE_PATH"));
         text.setFill(Color.BLACK);
         text.setFont(Font.font("sans-serif", FontPosture.ITALIC,15));
         ObservableList list = textFlow.getChildren();
+        list.clear();
         list.add(text);
         selectPathButton.setVisible(true);
         textPathArray.setVisible(true);
-        listView.setVisible(false);
+        textPathArray.addEventHandler(KeyEvent.KEY_RELEASED,new TextAreaCheck(IsStringDirPath::test));
+    }
+
+    private void secondStage() {
+        selectPathButton.setVisible(false);
+        textPathArray.setVisible(false);
+
+
+        fileTable.setVisible(true);
+        addDirToFileTable.setVisible(true);
+        addFileToFileTable.setVisible(true);
     }
 
     public void selectBasePath() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(resourceBundle.getString("SELECT_BASE_PATH"));
-        fileChooser.showOpenDialog(mainWindows);
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle(resourceBundle.getString("SELECT_BASE_PATH"));
+        directoryChooser.setInitialDirectory(IsStringDirPath.test(textPathArray.getText())? Paths.get(textPathArray.getText()).toFile(): openFileDialogIniFolder);
+        File selectedDir = directoryChooser.showDialog(mainWindows);
+        if (selectedDir!=null) {
+            basePath = selectedDir.toPath();
+            textPathArray.setText(basePath.toString());
+        }
     }
+
+    private class ButtonBackPress implements EventHandler<ActionEvent> {
+
+        @Override
+        public void handle(ActionEvent actionEvent) {
+            if (stage.ordinal()==0) {
+                return;
+            } else {
+                stage = MainFormStage.values()[stage.ordinal()-1];
+                changeStage(stage);
+            }
+        }
+    }
+
+    private class ButtonNextPress implements EventHandler<ActionEvent> {
+
+        @Override
+        public void handle(ActionEvent actionEvent) {
+            if (stage.ordinal()>=MainFormStage.values().length-1) {
+                return;
+            } else {
+                stage = MainFormStage.values()[stage.ordinal()+1];
+                changeStage(stage);
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 
 
 

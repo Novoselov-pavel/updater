@@ -3,7 +3,6 @@ package com.npn.javafx.model;
 import com.npn.javafx.controller.ParserClassController;
 import com.npn.javafx.model.interfaces.*;
 
-import java.io.Console;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Properties;

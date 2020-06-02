@@ -4,18 +4,18 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="750.0" style="-fx-background-color: #1f72bf;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.npn.javafx.controller.uicontroller.UIMainFormController">
+<AnchorPane maxHeight="1600.0" maxWidth="2000.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1000.0" style="-fx-background-color: #1f72bf;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.npn.javafx.controller.uicontroller.UIMainFormController">
    <children>
-      <Text fill="WHITE" layoutX="72.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%Text.UpdaterAdministrationMode" AnchorPane.topAnchor="5.0">
+      <Text fill="WHITE" layoutX="14.0" layoutY="25.700000762939453" strokeType="OUTSIDE" strokeWidth="0.0" text="%Text.UpdaterAdministrationMode" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="5.0">
          <font>
             <Font name="FreeSerif Bold Italic" size="23.0" />
          </font>
       </Text>
-      <SplitPane dividerPositions="0.85" layoutX="276.0" layoutY="32.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+      <SplitPane dividerPositions="0.93" layoutX="276.0" layoutY="32.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <SplitPane dividerPositions="0.2" layoutX="127.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <SplitPane dividerPositions="0.1" layoutX="127.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <items>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
@@ -24,9 +24,24 @@
                         </AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
-                              <Button fx:id="selectPathButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" onMouseClicked="#selectBasePath" text="%Text.SelectPath" AnchorPane.bottomAnchor="252.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="580.0" AnchorPane.topAnchor="42.0" />
-                              <TextArea fx:id="textPathArray" layoutX="173.0" layoutY="-47.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="220.0" AnchorPane.leftAnchor="180.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                              <ListView fx:id="listView" focusTraversable="false" layoutX="71.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                              <Button fx:id="selectPathButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" onMouseClicked="#selectBasePath" text="%Text.SelectPath" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="42.0" />
+                              <TextArea fx:id="textPathArray" layoutX="173.0" layoutY="-47.0" prefHeight="90.0" prefWidth="796.0" wrapText="true" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                              <TableView fx:id="fileTable" layoutX="63.0" layoutY="60.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
+                                <columns>
+                                  <TableColumn prefWidth="75.0" text="C1" />
+                                  <TableColumn prefWidth="75.0" text="C2" />
+                                </columns>
+                              </TableView>
+                              <Button fx:id="addDirToFileTable" layoutX="10.0" layoutY="595.0" mnemonicParsing="false" text="%Text.AddDirectory" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="600.0">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="addFileToFileTable" layoutX="184.0" layoutY="600.0" mnemonicParsing="false" text="%Text.AddFile" AnchorPane.leftAnchor="250.0">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Button>
                            </children>
                         </AnchorPane>
                     </items>
