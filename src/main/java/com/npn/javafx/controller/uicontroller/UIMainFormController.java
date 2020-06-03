@@ -36,6 +36,7 @@ public class UIMainFormController {
             Locale.getDefault());
     private Stage mainWindows;
     private Path basePath;
+    private FileItemTableView tableClass = null;
 
     public UIMainFormController() {
     }
@@ -77,14 +78,17 @@ public class UIMainFormController {
     private Button addFileToFileTable;
 
 
+
     public void init(Stage mainWindows) {
         this.mainWindows = mainWindows;
         changeStage(MainFormStage.SELECT_BASE_PATH);
         buttonExit.setOnAction(e-> Platform.exit());
         FileItemTableView table = new FileItemTableView(fileTable,resourceBundle);
         table.init();
+        tableClass = table;
         buttonBack.setOnAction(new ButtonBackPress());
         buttonNext.setOnAction(new ButtonNextPress());
+        ///TODO Добавить обработку событий для кнопок addDirToFileTable addFileToFileTable
     }
 
     public void changeStage(MainFormStage stage) {

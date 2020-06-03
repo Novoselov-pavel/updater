@@ -51,12 +51,13 @@ public class BashController {
         if (isFileName(args[0])) {
             return search(args[0]);
         } else {
-            ///TODO
+            if (isFileName(args[1])) {
+                updateVersion(args[0],args[1]);
+            } else {
+                throw new IllegalArgumentException("Illegal argument of command line");
+            }
         }
-
         return null;
-
-
     }
 
 
