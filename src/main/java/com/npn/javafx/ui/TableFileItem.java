@@ -84,9 +84,31 @@ public class TableFileItem {
         return needPack;
     }
 
+    /**
+     * Проверяет значения и корректирует их при незначительных ошибках
+     * @return true если значения верные, false если нет
+     */
+    public boolean checkValue() {
+        if (isValidInputPath(path.getValue())) {
+            if (relativePath.getValue().equals("/") || relativePath.getValue().equals("\\")) {
+                relativePath.set("");
+                return true;
+            }
+
+            if (relativePath.getValue().startsWith("/")||relativePath.getValue().startsWith("\\")) {
+                relativePath.setValue(relativePath.getValue().substring(1));
+                return true;
+            }
+
+        } else {
+            return false;
+        }
+        return true;
+    }
 
 
-    public static boolean checkInputPath(String path) {
+
+    public static boolean isValidInputPath(String path) {
         if (path == null || path.isBlank()) return false;
         try {
             Path cuPath = Paths.get(path);

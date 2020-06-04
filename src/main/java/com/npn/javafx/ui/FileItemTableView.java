@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 public class FileItemTableView {
     private final TableView<TableFileItem> table;
     private final ResourceBundle resourceBundle;
-    private ObservableList<TableFileItem> fileDate = FXCollections.observableArrayList();
+    private final ObservableList<TableFileItem> fileDate = FXCollections.observableArrayList();
 
 
     public FileItemTableView(final TableView<TableFileItem> table, ResourceBundle resourceBundle) {
@@ -65,7 +65,16 @@ public class FileItemTableView {
         fileDate.add(tableFileItem);
     }
 
-
+    public boolean isDataValid() {
+        if (fileDate.size() == 0) return false;
+        boolean isGood = true;
+        for (TableFileItem item : fileDate) {
+            if(!item.checkValue()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 
 
@@ -103,7 +112,7 @@ public class FileItemTableView {
                                 setText(null);
                                 setGraphic(null);
                             } else {
-                                if (TableFileItem.checkInputPath(item)) {
+                                if (TableFileItem.isValidInputPath(item)) {
                                     setTextFill(Color.BLACK);
                                 } else {
                                     setTextFill(Color.RED);

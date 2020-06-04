@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
@@ -22,7 +23,7 @@
                               <TextFlow fx:id="textFlow" layoutX="20.0" layoutY="-52.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
                            </children>
                         </AnchorPane>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                      <AnchorPane fx:id="mainAnchorPanel" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
                               <Button fx:id="selectPathButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" onMouseClicked="#selectBasePath" text="%Text.SelectPath" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="42.0" />
                               <TextArea fx:id="textPathArray" layoutX="173.0" layoutY="-47.0" prefHeight="90.0" prefWidth="796.0" wrapText="true" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
@@ -37,6 +38,7 @@
                                     <Font size="14.0" />
                                  </font>
                               </Button>
+                              <ImageView fx:id="currentStageImage" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="300.0" AnchorPane.topAnchor="100.0" />
                            </children>
                         </AnchorPane>
                     </items>
