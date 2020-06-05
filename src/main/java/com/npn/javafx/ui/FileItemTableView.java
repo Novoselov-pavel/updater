@@ -12,6 +12,8 @@ import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -70,10 +72,19 @@ public class FileItemTableView {
         boolean isGood = true;
         for (TableFileItem item : fileDate) {
             if(!item.checkValue()) {
-                return false;
+                isGood = false;
             }
         }
-        return true;
+
+        //проверка дубликатов
+        if (isGood) {
+            Set<String> set = fileDate.stream().map(x->x.getRelativePath()+x.getPath()).collect(Collectors.toSet());
+            if (set.size()<fileDate.size()) {
+                isGood = false;
+            }
+        }
+
+        return isGood;
     }
 
 

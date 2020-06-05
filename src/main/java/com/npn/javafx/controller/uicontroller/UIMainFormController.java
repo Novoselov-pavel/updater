@@ -45,6 +45,7 @@ public class UIMainFormController {
             Locale.getDefault());
     private Stage mainWindows;
     private FileItemTableView tableClass = null;
+    private volatile boolean isDataValid = false;
 
     public UIMainFormController() {
     }
@@ -113,8 +114,6 @@ public class UIMainFormController {
 
 
         textPathArray.addEventHandler(KeyEvent.KEY_RELEASED,new TextAreaCheck(IsStringDirPath::test));
-
-        ///TODO Добавить обработку событий для кнопок addDirToFileTable addFileToFileTable
     }
 
     public void changeStage(MainFormStage stage) {
@@ -127,6 +126,8 @@ public class UIMainFormController {
             secondStage();
         } else if (stage == MainFormStage.CHECK_INPUT) {
             thirdStage();
+        } else if (stage == MainFormStage.DISTR_VIEW) {
+            fourthStage();
         }
     }
 
@@ -135,13 +136,8 @@ public class UIMainFormController {
         addDirToFileTable.setVisible(false);
         addFileToFileTable.setVisible(false);
         currentStageImage.setVisible(false);
+        setHeaderText("SELECT_BASE_PATH");
 
-        Text text = new Text(resourceBundle.getString("SELECT_BASE_PATH"));
-        text.setFill(Color.BLACK);
-        text.setFont(Font.font("sans-serif", FontPosture.ITALIC,15));
-        ObservableList<Node> list = textFlow.getChildren();
-        list.clear();
-        list.add(text);
         selectPathButton.setVisible(true);
         textPathArray.setVisible(true);
 
@@ -152,6 +148,7 @@ public class UIMainFormController {
         textPathArray.setVisible(false);
         currentStageImage.setVisible(false);
 
+        setHeaderText("SELECT_FILES_TO_CREATE_DISTR");
         fileTable.setVisible(true);
         addDirToFileTable.setVisible(true);
         addFileToFileTable.setVisible(true);
@@ -164,6 +161,7 @@ public class UIMainFormController {
         fileTable.setVisible(false);
         addDirToFileTable.setVisible(false);
         addFileToFileTable.setVisible(false);
+        setHeaderText("CHECKING");
         currentStageImage.setVisible(true);
 
         URL checking =  this.getClass().getResource("/ui/pics/checking.png");
@@ -172,18 +170,19 @@ public class UIMainFormController {
             currentStageImage.setImage(image);
         } catch (Exception ignored) {
         }
-        boolean isCorrectData= false;
-        try {
-            isCorrectData = checkTableClassData();
-        } catch (InterruptedException | ExecutionException ignored){}
-
-        if (isCorrectData) {
-            checking =  this.getClass().getResource("/ui/pics/ok.png");
-        } else {
-            checking =  this.getClass().getResource("/ui/pics/fail.png");
-        }
         Image image = new Image(checking.toString());
         currentStageImage.setImage(image);
+        checkTableClassData(currentStageImage, "/ui/pics/ok.png","/ui/pics/fail.png");
+    }
+
+    private void fourthStage() {
+        selectPathButton.setVisible(false);
+        textPathArray.setVisible(false);
+        fileTable.setVisible(false);
+        addDirToFileTable.setVisible(false);
+        addFileToFileTable.setVisible(false);
+        currentStageImage.setVisible(false);
+        setHeaderText("DISTR_VIEW");
 
     }
 
@@ -198,6 +197,18 @@ public class UIMainFormController {
         if (selectedDir!=null) {
             textPathArray.setText(selectedDir.toPath().toString());
         }
+    }
+
+    /**
+     * Устанавливает текст заголовка
+     *
+     * @param resourceBundleString строка из ui/uimainlocale.properties
+     */
+    private void setHeaderText(String resourceBundleString) {
+        Text text = getHeaderText(resourceBundleString);
+        ObservableList<Node> list = textFlow.getChildren();
+        list.clear();
+        list.add(text);
     }
 
     /**
@@ -248,18 +259,48 @@ public class UIMainFormController {
         }
     }
 
-    private boolean checkTableClassData() throws InterruptedException, ExecutionException {
-        Callable<Boolean> callable = new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                ///TODO переделать это для асинхронного выполнения
-                return tableClass.isDataValid();
+    /**
+     * Проверяет значения исходных данных на правильность и выводит в указанный ImageView
+     * картинки положительного и отрицательного результата
+     * результат также записывается в переменную {@link this#isDataValid}
+     *
+     * @param view вид куда бюудет подключена картинка
+     * @param positive адрес картинки при удачной проверке
+     * @param negativePath адрес картинки при ошибочной проверке
+     */
+    private void checkTableClassData(ImageView view, String positive, String negativePath){
+        new Thread(()->{
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                return;
             }
-        };
-        FutureTask<Boolean> futureTask = new FutureTask<>(callable);
-        new Thread(futureTask).start();
-        Thread.sleep(1000);
-        return futureTask.get();
+            URL checking;
+
+            if (tableClass.isDataValid()) {
+                checking =  this.getClass().getResource(positive);
+                isDataValid = true;
+            } else {
+                checking =  this.getClass().getResource(negativePath);
+                isDataValid = false;
+            }
+            Image image = new Image(checking.toString());
+            view.setImage(image);
+        }).start();
+    }
+
+    /**
+     * Создает элемент Text для заголовка
+     *
+     * @param resourceBundleString строка из ui/uimainlocale.properties
+     * @return Text
+     */
+    private Text getHeaderText(String resourceBundleString) {
+        Text text = new Text(resourceBundle.getString(resourceBundleString));
+        text.setFill(Color.BLACK);
+        text.setFont(Font.font("sans-serif", FontPosture.ITALIC,15));
+
+        return text;
     }
 
     private class ButtonBackPress implements EventHandler<ActionEvent> {
@@ -282,6 +323,13 @@ public class UIMainFormController {
             if (stage.ordinal() >= MainFormStage.values().length - 1) {
                 ///TODO обработчик запуска в работу
                 return;
+            } else if (stage == MainFormStage.CHECK_INPUT) {
+                if (!isDataValid) {
+                    stage = MainFormStage.CHECK_INPUT;
+                } else {
+                    stage = MainFormStage.values()[stage.ordinal() + 1];
+                    changeStage(stage);
+                }
             } else {
                 stage = MainFormStage.values()[stage.ordinal() + 1];
                 changeStage(stage);

@@ -6,8 +6,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 /**
  * Класс объектов для работы с FileItemTableView
@@ -23,12 +25,12 @@ public class TableFileItem {
     /**
      * Относительный путь куда распаковывается файл/папка
      */
-    private final StringProperty relativePath = new SimpleStringProperty();
+    private final StringProperty relativePath = new SimpleStringProperty("");
 
     /**
      * Требуется архивание файла/папки или нет
      */
-    private final BooleanProperty needPack = new SimpleBooleanProperty();
+    private final BooleanProperty needPack = new SimpleBooleanProperty(true);
 
     public TableFileItem() {
         path.setValue("");
@@ -44,8 +46,6 @@ public class TableFileItem {
 
     public TableFileItem(String path) {
         this.path.setValue(path);
-        relativePath.setValue("");
-        needPack.setValue(true);
     }
 
     public String getPath() {
@@ -99,15 +99,34 @@ public class TableFileItem {
                 relativePath.setValue(relativePath.getValue().substring(1));
                 return true;
             }
-
+            try {
+                if (!relativePath.getValue().isBlank()) {
+                    Path path = Paths.get(relativePath.getValue());
+                }
+            } catch (InvalidPathException e) {
+                return false;
+            }
         } else {
             return false;
         }
         return true;
     }
 
+    /**
+     * Клонирует объект с новым относительным путем
+     *
+     * @param relativePath
+     * @return
+     */
+    public TableFileItem cloneWithNewRelativePath(String relativePath) {
+        return new TableFileItem(this.getPath(),relativePath,this.isNeedPack());
+    }
 
-
+    /**
+     * Проверяет правильность и существование файло
+     * @param path
+     * @return
+     */
     public static boolean isValidInputPath(String path) {
         if (path == null || path.isBlank()) return false;
         try {
@@ -117,5 +136,20 @@ public class TableFileItem {
             return false;
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TableFileItem fileItem = (TableFileItem) o;
+        return Objects.equals(path, fileItem.path) &&
+                Objects.equals(relativePath, fileItem.relativePath);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path, relativePath);
+    }
+
 
 }
