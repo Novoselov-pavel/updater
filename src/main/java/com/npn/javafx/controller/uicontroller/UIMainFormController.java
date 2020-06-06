@@ -1,6 +1,7 @@
 package com.npn.javafx.controller.uicontroller;
 
         import com.npn.javafx.Updater;
+        import com.npn.javafx.ui.ArchiveItemTableView;
         import com.npn.javafx.ui.FileItemTableView;
         import com.npn.javafx.ui.TableFileItem;
         import com.npn.javafx.ui.checkers.IsStringDirPath;
@@ -33,10 +34,6 @@ package com.npn.javafx.controller.uicontroller;
         import java.nio.file.Paths;
         import java.util.Locale;
         import java.util.ResourceBundle;
-        import java.util.concurrent.Callable;
-        import java.util.concurrent.ExecutionException;
-        import java.util.concurrent.FutureTask;
-
 
 public class UIMainFormController {
     private File openFileDialogIniFolder = Updater.JAR_FILE_PATH.toFile();
@@ -45,6 +42,7 @@ public class UIMainFormController {
             Locale.getDefault());
     private Stage mainWindows;
     private FileItemTableView tableClass = null;
+    private ArchiveItemTableView archiveTableClass = null;
     private volatile boolean isDataValid = false;
 
     public UIMainFormController() {
@@ -81,6 +79,9 @@ public class UIMainFormController {
     private TableView<TableFileItem> fileTable;
 
     @FXML
+    private TableView<ArchiveItemTableView.ArchiveObject> packTable;
+
+    @FXML
     private Button addDirToFileTable;
 
     @FXML
@@ -92,6 +93,10 @@ public class UIMainFormController {
     @FXML
     private ImageView currentStageImage;
 
+    /**
+     * Инициализация таблицы
+     * @param mainWindows ссылка на основное окно
+     */
     public void init(Stage mainWindows) {
         this.mainWindows = mainWindows;
         changeStage(MainFormStage.SELECT_BASE_PATH);
@@ -111,6 +116,13 @@ public class UIMainFormController {
             File file = chooseFile("SELECT_FILE",openFileDialogIniFolder.getPath());
             addNewFileToTable(file,table);
         });
+
+        ArchiveItemTableView archiveItemTable = new ArchiveItemTableView(packTable,resourceBundle);
+        archiveItemTable.init();
+        archiveTableClass = archiveItemTable;
+
+
+
 
 
         textPathArray.addEventHandler(KeyEvent.KEY_RELEASED,new TextAreaCheck(IsStringDirPath::test));
@@ -136,6 +148,7 @@ public class UIMainFormController {
         addDirToFileTable.setVisible(false);
         addFileToFileTable.setVisible(false);
         currentStageImage.setVisible(false);
+        packTable.setVisible(false);
         setHeaderText("SELECT_BASE_PATH");
 
         selectPathButton.setVisible(true);
@@ -147,6 +160,7 @@ public class UIMainFormController {
         selectPathButton.setVisible(false);
         textPathArray.setVisible(false);
         currentStageImage.setVisible(false);
+        packTable.setVisible(false);
 
         setHeaderText("SELECT_FILES_TO_CREATE_DISTR");
         fileTable.setVisible(true);
@@ -161,6 +175,7 @@ public class UIMainFormController {
         fileTable.setVisible(false);
         addDirToFileTable.setVisible(false);
         addFileToFileTable.setVisible(false);
+        packTable.setVisible(false);
         setHeaderText("CHECKING");
         currentStageImage.setVisible(true);
 
@@ -183,7 +198,8 @@ public class UIMainFormController {
         addFileToFileTable.setVisible(false);
         currentStageImage.setVisible(false);
         setHeaderText("DISTR_VIEW");
-
+        packTable.setVisible(true);
+        archiveTableClass.addAllArchiveObject(tableClass.getTableFileItems());
     }
 
 

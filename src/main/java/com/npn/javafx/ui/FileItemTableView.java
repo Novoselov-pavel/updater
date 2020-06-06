@@ -1,5 +1,6 @@
 package com.npn.javafx.ui;
 
+import com.google.common.collect.Comparators;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -11,6 +12,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,7 +41,7 @@ public class FileItemTableView {
         TableColumn<TableFileItem, Boolean> needArchive = new TableColumn<>(resourceBundle.getString("NEED_PACK"));
         //размеры
         path.setMinWidth(550);
-        relativePath.setMinWidth(350);
+        relativePath.setMinWidth(340);
         needArchive.setMinWidth(100);
         needArchive.setMaxWidth(100);
         //создание отображения ячеек в колонках
@@ -87,6 +90,11 @@ public class FileItemTableView {
         return isGood;
     }
 
+    public TableFileItem[] getTableFileItems() {
+        TableFileItem[] array =fileDate.toArray(new TableFileItem[0]);
+        Arrays.sort(array, Comparator.comparing(TableFileItem::getRelativePath));
+        return array;
+    }
 
 
 
