@@ -1,6 +1,7 @@
 package com.npn.javafx;
 
 import com.npn.javafx.controller.uicontroller.BashController;
+import com.npn.javafx.controller.uicontroller.UIFactory;
 import com.npn.javafx.controller.uicontroller.UIMainFormController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -54,19 +55,15 @@ public class Updater extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        URL xmlUrl = getClass().getResource("/ui/UIMainForm.fxml");
-        FXMLLoader loader = new FXMLLoader(xmlUrl,resourceBundle);
+        UIFactory factory = new UIFactory(resourceBundle, primaryStage);
+
         try {
-            Parent root = loader.load();
-            primaryStage.setScene(new Scene(root));
-            UIMainFormController controller = loader.getController();
-            controller.init(primaryStage);
-            primaryStage.show();
-
-
-        } catch (IOException e) {
+            factory.initUI();
+        } catch (Exception e) {
             e.printStackTrace();
+            ///TODO
         }
+
 
     }
 }

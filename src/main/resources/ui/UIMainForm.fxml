@@ -12,7 +12,7 @@
             <Font name="FreeSerif Bold Italic" size="23.0" />
          </font>
       </Text>
-      <SplitPane dividerPositions="0.93" layoutX="276.0" layoutY="32.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+      <SplitPane fx:id="mainSplitPanel" dividerPositions="0.93" layoutX="276.0" layoutY="32.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
@@ -27,14 +27,16 @@
                            <children>
                               <Button fx:id="selectPathButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" onMouseClicked="#selectBasePath" text="%Text.SelectPath" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="42.0" />
                               <TextArea fx:id="textPathArray" layoutX="173.0" layoutY="-47.0" prefHeight="90.0" prefWidth="796.0" wrapText="true" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-                              <TableView fx:id="fileTable" editable="true" layoutX="63.0" layoutY="60.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
-                              <TableView fx:id="packTable" editable="true" layoutX="63.0" layoutY="60.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
-                               <Button fx:id="addDirToFileTable" layoutX="10.0" layoutY="595.0" mnemonicParsing="false" text="%Text.AddDirectory" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="600.0">
+                              <Button fx:id="selectDirButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" onMouseClicked="#selectBasePath" text="%Text.SelectPath" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="42.0" />
+                              <TextArea fx:id="dirPathArray" layoutX="173.0" layoutY="-47.0" prefHeight="90.0" prefWidth="796.0" wrapText="true" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                               <TableView fx:id="fileTable" editable="true" layoutX="63.0" layoutY="60.0" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                              <TableView fx:id="packTable" editable="true" layoutX="63.0" layoutY="60.0" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
+                               <Button fx:id="addDirToFileTable" layoutX="10.0" layoutY="595.0" mnemonicParsing="false" text="%Text.AddDirectory" visible="false" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="600.0">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Button>
-                              <Button fx:id="addFileToFileTable" layoutX="184.0" layoutY="600.0" mnemonicParsing="false" text="%Text.AddFile" AnchorPane.leftAnchor="250.0">
+                              <Button fx:id="addFileToFileTable" layoutX="184.0" layoutY="600.0" mnemonicParsing="false" text="%Text.AddFile" visible="false" AnchorPane.leftAnchor="250.0">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -61,11 +63,6 @@
                            </font>
                         </Button>
                         <Button fx:id="buttonNext" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="%Text.Next" translateX="-10.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                        </Button>
-                        <Button fx:id="buttonOk" layoutX="668.0" layoutY="31.0" maxHeight="26.0" maxWidth="90.0" minHeight="26.0" minWidth="90.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="90.0" text="%Text.OK" translateX="-10.0">
                            <font>
                               <Font size="14.0" />
                            </font>

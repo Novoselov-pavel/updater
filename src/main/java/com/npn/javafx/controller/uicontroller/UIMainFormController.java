@@ -52,7 +52,16 @@ public class UIMainFormController {
     private TextFlow textFlow;
 
     @FXML
+    private SplitPane mainSplitPanel;
+
+    @FXML
     private Button selectPathButton;
+
+    @FXML
+    private Button selectDirButton;
+
+    @FXML
+    private TextArea dirPathArray;
 
     @FXML
     private TextArea textPathArray;
@@ -68,9 +77,6 @@ public class UIMainFormController {
 
     @FXML
     private Button buttonNext;
-
-    @FXML
-    private Button buttonOk;
 
     @FXML
     private Button buttonExit;
@@ -121,10 +127,6 @@ public class UIMainFormController {
         archiveItemTable.init();
         archiveTableClass = archiveItemTable;
 
-
-
-
-
         textPathArray.addEventHandler(KeyEvent.KEY_RELEASED,new TextAreaCheck(IsStringDirPath::test));
     }
 
@@ -151,7 +153,9 @@ public class UIMainFormController {
         addFileToFileTable.setVisible(false);
         currentStageImage.setVisible(false);
         packTable.setVisible(false);
-        setHeaderText("SELECT_BASE_PATH");
+        selectDirButton.setVisible(false);
+        dirPathArray.setVisible(false);
+
 
         selectPathButton.setVisible(true);
         textPathArray.setVisible(true);
@@ -163,8 +167,9 @@ public class UIMainFormController {
         textPathArray.setVisible(false);
         currentStageImage.setVisible(false);
         packTable.setVisible(false);
+        selectDirButton.setVisible(false);
+        dirPathArray.setVisible(false);
 
-        setHeaderText("SELECT_FILES_TO_CREATE_DISTR");
         fileTable.setVisible(true);
         addDirToFileTable.setVisible(true);
         addFileToFileTable.setVisible(true);
@@ -178,7 +183,9 @@ public class UIMainFormController {
         addDirToFileTable.setVisible(false);
         addFileToFileTable.setVisible(false);
         packTable.setVisible(false);
-        setHeaderText("CHECKING");
+        selectDirButton.setVisible(false);
+        dirPathArray.setVisible(false);
+
         currentStageImage.setVisible(true);
 
         URL checking =  this.getClass().getResource("/ui/pics/checking.png");
@@ -199,7 +206,10 @@ public class UIMainFormController {
         addDirToFileTable.setVisible(false);
         addFileToFileTable.setVisible(false);
         currentStageImage.setVisible(false);
-        setHeaderText("DISTR_VIEW");
+        selectDirButton.setVisible(false);
+        dirPathArray.setVisible(false);
+
+
         packTable.setVisible(true);
         archiveTableClass.addAllArchiveObject(tableClass.getTableFileItems());
     }
@@ -211,8 +221,11 @@ public class UIMainFormController {
         addDirToFileTable.setVisible(false);
         addFileToFileTable.setVisible(false);
         currentStageImage.setVisible(false);
-        setHeaderText("SELECT_DESTINATION_DIR");
+
         packTable.setVisible(false);
+
+        selectDirButton.setVisible(true);
+        dirPathArray.setVisible(true);
 
         ///TODO
     }
@@ -230,16 +243,16 @@ public class UIMainFormController {
     }
 
     /**
-     * Устанавливает текст заголовка
-     *
-     * @param resourceBundleString строка из ui/uimainlocale.properties
+     * Обработка нажатия на кнопку выбора пути хранения
      */
-    private void setHeaderText(String resourceBundleString) {
-        Text text = getHeaderText(resourceBundleString);
-        ObservableList<Node> list = textFlow.getChildren();
-        list.clear();
-        list.add(text);
+    public void selectDirPath() {
+        File selectedDir = chooseDir("SELECT_BASE_PATH",textPathArray.getText());
+
+        if (selectedDir!=null) {
+            dirPathArray.setText(selectedDir.toPath().toString());
+        }
     }
+
 
     /**
      * Открывает меню выбора папок
@@ -319,19 +332,6 @@ public class UIMainFormController {
         }).start();
     }
 
-    /**
-     * Создает элемент Text для заголовка
-     *
-     * @param resourceBundleString строка из ui/uimainlocale.properties
-     * @return Text
-     */
-    private Text getHeaderText(String resourceBundleString) {
-        Text text = new Text(resourceBundle.getString(resourceBundleString));
-        text.setFill(Color.BLACK);
-        text.setFont(Font.font("sans-serif", FontPosture.ITALIC,15));
-
-        return text;
-    }
 
     private class ButtonBackPress implements EventHandler<ActionEvent> {
 
