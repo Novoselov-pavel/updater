@@ -29,9 +29,9 @@ class FileSystemParserTest {
         filesList.add("/home/pavel/IdeaProjects/javafx/updater/src/test/testArchive/inputFiles/afasf");
         filesList.add("/home/pavel/IdeaProjects/javafx/updater/src/test/testArchive/inputFiles/afasf/cav-linux_x64.deb");
 
-        dirList.add("/home/pavel/IdeaProjects/javafx/updater/src/test/testArchive/inputFiles/йййыйуцаеп");
-        dirList.add("/home/pavel/IdeaProjects/javafx/updater/src/test/testArchive/inputFiles/qw");
-        dirList.add("/home/pavel/IdeaProjects/javafx/updater/src/test/testArchive/inputFiles/afasf");
+        dirList.add("йййыйуцаеп");
+        dirList.add("qw");
+        dirList.add("afasf");
     }
 
     @Test

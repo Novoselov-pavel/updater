@@ -10,72 +10,79 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
-        <javafx.version>14</javafx.version>
+        <javafx.library.version>14</javafx.library.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <junit.jupiter.version>5.7.0-M1</junit.jupiter.version>
+        <junit.platform.version>1.7.0-M1</junit.platform.version>
+        <jaxb.version>3.0.0-M2</jaxb.version>
+        <maven.test.plugin.version>2.22.2</maven.test.plugin.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.30</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
-            <version>1.7.30</version>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>14</version>
+            <version>${javafx.library.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-            <version>14</version>
+            <version>${javafx.library.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>14</version>
+            <version>${javafx.library.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
-            <version>14</version>
+            <version>${javafx.library.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
-            <version>14</version>
+            <version>${javafx.library.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <version>1.6.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>5.6.2</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- классы тестирования с мавен -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.6.2</version>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- классы тестирования с мавен -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>${junit.platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- классы тестирования с мавен -->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.22.2</version>
-            <scope>test</scope>
+            <version>${maven.test.plugin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -95,12 +102,12 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
-            <version>3.0.0-M2</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>3.0.0-M2</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <!-- библиотека работы с потоками, более удобная чем стандартная-->
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
@@ -136,6 +143,21 @@
                     <mainClass>com.npn.javafx.Updater</mainClass>
                 </configuration>
             </plugin>
+            <!-- классы тестирования с мавен -->
+            <!-- отладка через mvn -Dmaven.surefire.debug test -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.test.plugin.version}</version>
+                <configuration>
+
+                    <includes>
+                        <!-- отдельный запуск теста -->
+                        <include>com.npn.javafx.ui.ArchiveItemTableViewTest</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 

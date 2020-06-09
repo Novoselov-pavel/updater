@@ -140,6 +140,8 @@ public class UIMainFormController {
             thirdStage();
         } else if (stage == MainFormStage.DISTR_VIEW) {
             fourthStage();
+        } else  if (stage == MainFormStage.SELECT_DESTINATION_DIR) {
+            fifthStage();
         }
     }
 
@@ -202,6 +204,18 @@ public class UIMainFormController {
         archiveTableClass.addAllArchiveObject(tableClass.getTableFileItems());
     }
 
+    private void fifthStage() {
+        selectPathButton.setVisible(false);
+        textPathArray.setVisible(false);
+        fileTable.setVisible(false);
+        addDirToFileTable.setVisible(false);
+        addFileToFileTable.setVisible(false);
+        currentStageImage.setVisible(false);
+        setHeaderText("SELECT_DESTINATION_DIR");
+        packTable.setVisible(false);
+
+        ///TODO
+    }
 
 
     /**

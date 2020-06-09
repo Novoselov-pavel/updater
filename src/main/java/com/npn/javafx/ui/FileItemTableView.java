@@ -59,7 +59,7 @@ public class FileItemTableView {
         table.setItems(fileDate);
         //добавление удаления строк по кнопке delete
         table.addEventHandler(KeyEvent.KEY_RELEASED, x-> {
-            if (x.getCode()== KeyCode.DELETE) {
+            if ((x.getTarget() instanceof TableView) && x.getCode()== KeyCode.DELETE) {
                 ObservableList<TableFileItem> selectedItems =  table.getSelectionModel().getSelectedItems();
                 table.getItems().removeAll(selectedItems);
             }

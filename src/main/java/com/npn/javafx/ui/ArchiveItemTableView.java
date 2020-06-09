@@ -14,10 +14,8 @@ import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ArchiveItemTableView {
     private final TableView<ArchiveObject> table;
@@ -75,19 +73,57 @@ public class ArchiveItemTableView {
 
     public void addAllArchiveObject(TableFileItem[] items) {
         ///для объектов которые не требуют упаковки
+        Collection<ArchiveObject> collection = transformToArchiveObject(items);
+        fileDate.addAll(collection);
+    }
+
+    public static List<ArchiveObject> transformToArchiveObject (TableFileItem[] items) {
+        ArrayList<ArchiveObject> retArray = new ArrayList<>();
+
         Arrays.stream(items).filter(x->!x.isNeedPack()).forEach(x->{
             ArchiveObject archiveObject = new ArchiveObject(x.getRelativePath(),false);
             archiveObject.addTableFileItem(x);
+            retArray.add(archiveObject);
         });
         ///для объектов которые требуют упаковки
-        //TODO остановился здесь
-
+        List<TableFileItem> list = Arrays.stream(items).filter(TableFileItem::isNeedPack).collect(Collectors.toList());
+        while (list.size()>0) {
+            ArchiveObject archiveObject = new ArchiveObject(list.get(0).getRelativePath(),true);
+            archiveObject.addTableFileItem(list.get(0).cloneWithNewRelativePath(""));
+            for (int i = 1; i <list.size(); i++) {
+                if (isRelativeToBasePath(list.get(0).getRelativePath(),list.get(i).getRelativePath())) {
+                    Path newPath = Paths.get(list.get(0).getRelativePath()).relativize(Paths.get(list.get(i).getRelativePath()));
+                    archiveObject.addTableFileItem(list.get(i).cloneWithNewRelativePath(newPath.toString()));
+                    list.remove(i);
+                    i--;
+                }
+            }
+            retArray.add(archiveObject);
+            list.remove(0);
+        }
+        return retArray;
     }
 
 
+    /**
+     * Проверят является ли переданный путь отностельным относительно базовго пути
+     *
+     * @param basePath базовый путь
+     * @param checkingPath проверяемый путь
+     * @return true/false
+     */
+    private static boolean isRelativeToBasePath(String basePath, String checkingPath) {
+        if (!checkingPath.startsWith(basePath)) {
+            return false;
+        }
+
+        Path newPath = Paths.get(basePath).relativize(Paths.get(checkingPath));
+        return newPath.toString().length()<=checkingPath.length();
+    }
+
 
     public static class ArchiveObject {
-        private StringProperty name = new SimpleStringProperty(new BigInteger(10,new SecureRandom()).toString());
+        private StringProperty name = new SimpleStringProperty(new BigInteger(34,new SecureRandom()).toString(32));
         private StringProperty pathToUnpack = new SimpleStringProperty("");
         private boolean needPack;
 
@@ -100,18 +136,20 @@ public class ArchiveItemTableView {
 
         public void addTableFileItem(final TableFileItem item) {
             if (!needPack) {
-                if (!item.getRelativePath().equals(pathToUnpack)) {
+                if (!item.getRelativePath().equals(pathToUnpack.getValue())) {
                     throw new IllegalArgumentException("If ArchiveObject don't need pack, only element with same relativePath can included");
                 } else {
                     fileItems.add(item);
                     name.setValue(Paths.get(item.getPath()).getFileName().toString());
                 }
             } else {
-                Path base = Paths.get(pathToUnpack.getValue());
-                TableFileItem newItem = item.cloneWithNewRelativePath(base.relativize(Paths.get(item.getRelativePath())).toString());
-                fileItems.add(newItem);
+                fileItems.add(item);
             }
 
+        }
+
+        public Set<TableFileItem> getFileItems() {
+            return fileItems;
         }
 
         public String getFilesPaths() {
