@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.npn.javafx.controller.uicontroller.UISelectPathFormController"
+            prefHeight="400.0" prefWidth="600.0">
+            <children>
+                <Button fx:id="selectPathButton" layoutX="31.0" layoutY="42.0" mnemonicParsing="false" onAction="#selectBasePath" text="%Text.SelectPath" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="42.0" />
+                <TextArea fx:id="textPathArray" layoutX="173.0" layoutY="-47.0" prefHeight="90.0" prefWidth="796.0" wrapText="true" AnchorPane.leftAnchor="190.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            </children>
+</AnchorPane>

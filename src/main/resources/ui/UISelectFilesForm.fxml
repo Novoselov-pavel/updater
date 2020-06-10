@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.npn.javafx.controller.uicontroller.UISelectFilesFormController">
+    <children>
+        <TableView fx:id="fileTable" editable="true" layoutX="63.0" layoutY="60.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
+        <Button fx:id="addDirToFileTable" layoutX="10.0" layoutY="595.0" mnemonicParsing="false" onAction="#selectDir" text="%Text.AddDirectory" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="600.0">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Button>
+        <Button fx:id="addFileToFileTable" layoutX="184.0" layoutY="600.0" mnemonicParsing="false" onAction="#selectFile" text="%Text.AddFile" AnchorPane.leftAnchor="250.0">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Button>
+    </children>
+</AnchorPane>
