@@ -30,33 +30,31 @@ public class UISelectFilesFormController extends UIMainChildAbstractController {
 
     private FileItemTableView table;
 
-
-    public UISelectFilesFormController(UIMainFormController mainController, ResourceBundle resourceBundle) throws IOException {
-        super(mainController, resourceBundle);
+    public UISelectFilesFormController() {
     }
-
 
     /**
      * Возвращает путь к файлу FXML для закрузки элемента
      *
      * @return путь к файлу FXML
      */
-    @Override
-    public String getFXMLPath() {
+    public static String getFXMLPath() {
         return "ui/UISelectFilesForm.fxml";
     }
+
+
 
     @Override
     Node loadNode(String resourcePath) throws IOException {
         Node node = super.loadNode(resourcePath);
-        FileItemTableView table = new FileItemTableView(fileTable,resourceBundle);
+        FileItemTableView table = new FileItemTableView(fileTable,textResource);
         table.init();
         this.table = table;
         return node;
     }
 
     /**
-     * Обновляет элемент в соотвествией со стадией программы
+     * Обновляет элемент в соотвествии со стадией программы
      */
     @Override
     public void update() {
@@ -64,12 +62,14 @@ public class UISelectFilesFormController extends UIMainChildAbstractController {
             currentNode.setVisible(true);
         } else {
             currentNode.setVisible(false);
+            mainController.setFilesListIsValid(table==null? false:table.isDataValid());
+            mainController.setTableItems(table.getTableFileItems());
         }
     }
 
     public void selectDir() {
         UIOpenFileDialog openFileDialog = new UIOpenFileDialog(mainController.getMainWindows(),
-                resourceBundle,
+                textResource,
                 "SELECT_DIR",
                 mainController.getOpenFileDialogIniFolder().toString(),
                 mainController.getOpenFileDialogIniFolder());
@@ -83,7 +83,7 @@ public class UISelectFilesFormController extends UIMainChildAbstractController {
 
     public void selectFile() {
         UIOpenFileDialog openFileDialog = new UIOpenFileDialog(mainController.getMainWindows(),
-                resourceBundle,
+                textResource,
                 "SELECT_FILE",
                 mainController.getOpenFileDialogIniFolder().toString(),
                 mainController.getOpenFileDialogIniFolder());

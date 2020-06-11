@@ -48,7 +48,7 @@ public class UISelectPathFormController extends UIMainChildAbstractController {
     }
 
     /**
-     * Обновляет элемент в соотвествией со стадией программы
+     * Обновляет элемент в соотвествии со стадией программы
      */
     @Override
     public void update() {
@@ -66,7 +66,7 @@ public class UISelectPathFormController extends UIMainChildAbstractController {
      */
     public void selectBasePath() {
         UIOpenFileDialog openFileDialog = new UIOpenFileDialog(mainController.getMainWindows(),
-                                                resourceBundle,
+                                                textResource,
                                                 "SELECT_BASE_PATH",
                                                 textPathArray.getText(),
                                                 mainController.getOpenFileDialogIniFolder());

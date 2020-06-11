@@ -1,18 +1,13 @@
 package com.npn.javafx.controller.uicontroller;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 
-import java.net.URL;
 import java.util.ResourceBundle;
 
 public class UIFactory {
-    private ResourceBundle resourceBundle;
+    private final ResourceBundle resourceBundle;
     Stage primaryStage;
-    UIHeaderController headerController;
 
     public UIFactory(ResourceBundle resourceBundle, Stage primaryStage) {
         this.resourceBundle = resourceBundle;
@@ -20,17 +15,23 @@ public class UIFactory {
     }
 
     public void initUI() throws Exception {
-        URL xmlUrl = getClass().getResource("/ui/UIMainForm.fxml");
-        FXMLLoader loader = new FXMLLoader(xmlUrl, resourceBundle);
+        UIMainFormController controller = new UIMainFormController();
 
-        Parent root = loader.load();
-        primaryStage.setScene(new Scene(root));
-        UIMainFormController controller = loader.getController();
-        controller.init(primaryStage);
+        UIHeaderController headerController = new UIHeaderController(controller,resourceBundle);
+        UISelectPathFormController selectPathFormController = new UISelectPathFormController(controller,resourceBundle);
+        UISelectFilesFormController selectFilesFormController = new UISelectFilesFormController(controller,resourceBundle);
+        UICheckDataFormController checkDataFormController = new UICheckDataFormController(controller,resourceBundle);
+        UIArchiveItemFormController archiveItemFormController = new UIArchiveItemFormController(controller,resourceBundle);
+
+        controller.init(primaryStage,
+                headerController,
+                selectPathFormController,
+                selectFilesFormController,
+                checkDataFormController,
+                archiveItemFormController);
+
         primaryStage.show();
 
-        UIHeaderController headerController = new UIHeaderController(primaryStage,resourceBundle);
-        this.headerController = headerController;
     }
 
 

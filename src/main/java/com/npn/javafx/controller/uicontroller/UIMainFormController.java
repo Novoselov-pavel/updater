@@ -1,24 +1,27 @@
 package com.npn.javafx.controller.uicontroller;
 
         import com.npn.javafx.Updater;
-        import com.npn.javafx.ui.ArchiveItemTableView;
-        import com.npn.javafx.ui.FileItemTableView;
         import com.npn.javafx.model.MainFormStage;
+        import com.npn.javafx.ui.TableFileItem;
         import javafx.application.Platform;
         import javafx.event.ActionEvent;
         import javafx.event.EventHandler;
         import javafx.fxml.FXML;
+        import javafx.fxml.FXMLLoader;
+        import javafx.scene.Parent;
+        import javafx.scene.Scene;
         import javafx.scene.control.*;
-        import javafx.scene.image.Image;
-        import javafx.scene.image.ImageView;
         import javafx.scene.layout.AnchorPane;
         import javafx.stage.Stage;
 
 
         import java.io.File;
+        import java.io.IOException;
         import java.net.URL;
+        import java.util.Arrays;
         import java.util.Locale;
         import java.util.ResourceBundle;
+        import java.util.stream.Collectors;
 
 public class UIMainFormController {
     private File openFileDialogIniFolder = Updater.JAR_FILE_PATH.toFile();
@@ -29,9 +32,18 @@ public class UIMainFormController {
     private String basePath = "";
 
     private Stage mainWindows;
-    private FileItemTableView tableClass = null;
-    private ArchiveItemTableView archiveTableClass = null;
+
+    private boolean filesListIsValid = false;
+
     private volatile boolean isDataValid = false;
+
+    private TableFileItem[] tableItems = new TableFileItem[0];
+
+    private final String mainWindowsPath = "/ui/UIMainForm.fxml";
+
+    private UIHeaderController headerController;
+
+    private UIMainChildAbstractController[]  childrenUiFormControllers;
 
     public UIMainFormController() {
     }
@@ -46,19 +58,28 @@ public class UIMainFormController {
     private Button buttonExit;
 
     @FXML
-    private TableView<ArchiveItemTableView.ArchiveObject> packTable;
-
-    @FXML
     private AnchorPane mainAnchorPanel;
 
     @FXML
-    private ImageView currentStageImage;
+    private AnchorPane headerPane;
 
     /**
-     * Инициализация таблицы
+     * Инициализация mainWindows
      * @param mainWindows ссылка на основное окно
      */
-    public void init(Stage mainWindows) {
+    public void init(Stage mainWindows, UIHeaderController headerController, UIMainChildAbstractController ... childrenUiFormControllers) throws IOException {
+
+        this.headerController = headerController;
+        this.childrenUiFormControllers = childrenUiFormControllers;
+
+        URL xmlUrl = getClass().getResource(mainWindowsPath);
+        FXMLLoader loader = new FXMLLoader(xmlUrl, resourceBundle);
+        loader.setController(this);
+
+        Parent root = loader.load();
+        mainWindows.setScene(new Scene(root));
+
+
         this.mainWindows = mainWindows;
         changeStage(MainFormStage.SELECT_BASE_PATH);
         buttonExit.setOnAction(e-> Platform.exit());
@@ -66,12 +87,13 @@ public class UIMainFormController {
         buttonBack.setOnAction(new ButtonBackPress());
         buttonNext.setOnAction(new ButtonNextPress());
 
-        ArchiveItemTableView archiveItemTable = new ArchiveItemTableView(packTable,resourceBundle);
-        archiveItemTable.init();
-        archiveTableClass = archiveItemTable;
+        headerPane.getChildren().add(headerController.getNode());
 
+        mainAnchorPanel.getChildren().addAll(Arrays.stream(childrenUiFormControllers).map(UIMainChildAbstractController::getNode).collect(Collectors.toList()));
 
     }
+
+
     public File getOpenFileDialogIniFolder() {
         return openFileDialogIniFolder;
     }
@@ -97,99 +119,38 @@ public class UIMainFormController {
         this.basePath = basePath;
     }
 
+    public boolean isDataValid() {
+        return isDataValid;
+    }
+
+    public void setDataValid(boolean dataValid) {
+        isDataValid = dataValid;
+    }
+
+    public boolean isFilesListIsValid() {
+        return filesListIsValid;
+    }
+
+    public void setFilesListIsValid(boolean filesListIsValid) {
+        this.filesListIsValid = filesListIsValid;
+    }
+
+    public TableFileItem[] getTableItems() {
+        return tableItems;
+    }
+
+    public void setTableItems(TableFileItem[] tableItems) {
+        this.tableItems = tableItems;
+    }
+
     public void changeStage(MainFormStage stage) {
         if (stage==null) {
             throw new IllegalArgumentException();
         }
-        if (stage==MainFormStage.SELECT_BASE_PATH) {
-            firstStageView();
-        } else if (stage == MainFormStage.SELECT_FILE) {
-            secondStage();
-        } else if (stage == MainFormStage.CHECK_INPUT) {
-            thirdStage();
-        } else if (stage == MainFormStage.DISTR_VIEW) {
-            fourthStage();
-        } else  if (stage == MainFormStage.SELECT_DESTINATION_DIR) {
-            fifthStage();
-        }
+        headerController.setStage(stage);
+        Arrays.stream(childrenUiFormControllers).forEach(x->x.setStage(stage));
     }
 
-    private void firstStageView() {
-        currentStageImage.setVisible(false);
-        packTable.setVisible(false);
-
-    }
-
-    private void secondStage() {
-        currentStageImage.setVisible(false);
-        packTable.setVisible(false);
-
-    }
-
-
-    private void thirdStage() {
-        packTable.setVisible(false);
-
-        currentStageImage.setVisible(true);
-
-        URL checking =  this.getClass().getResource("/ui/pics/checking.png");
-        try {
-            Image image = new Image(checking.toString());
-            currentStageImage.setImage(image);
-        } catch (Exception ignored) {
-        }
-        Image image = new Image(checking.toString());
-        currentStageImage.setImage(image);
-        checkTableClassData(currentStageImage, "/ui/pics/ok.png","/ui/pics/fail.png");
-    }
-
-    private void fourthStage() {
-        currentStageImage.setVisible(false);
-
-
-        packTable.setVisible(true);
-        archiveTableClass.addAllArchiveObject(tableClass.getTableFileItems());
-    }
-
-    private void fifthStage() {
-        currentStageImage.setVisible(false);
-
-        packTable.setVisible(false);
-
-        ///TODO
-    }
-
-
-
-    /**
-     * Проверяет значения исходных данных на правильность и выводит в указанный ImageView
-     * картинки положительного и отрицательного результата
-     * результат также записывается в переменную {@link this#isDataValid}
-     *
-     * @param view вид куда бюудет подключена картинка
-     * @param positive адрес картинки при удачной проверке
-     * @param negativePath адрес картинки при ошибочной проверке
-     */
-    private void checkTableClassData(ImageView view, String positive, String negativePath){
-        new Thread(()->{
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                return;
-            }
-            URL checking;
-
-            if (tableClass.isDataValid()) {
-                checking =  this.getClass().getResource(positive);
-                isDataValid = true;
-            } else {
-                checking =  this.getClass().getResource(negativePath);
-                isDataValid = false;
-            }
-            Image image = new Image(checking.toString());
-            view.setImage(image);
-        }).start();
-    }
 
 
     private class ButtonBackPress implements EventHandler<ActionEvent> {

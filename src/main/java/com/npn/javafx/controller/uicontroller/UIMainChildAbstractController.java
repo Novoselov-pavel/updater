@@ -15,32 +15,35 @@ import java.util.ResourceBundle;
  * Абстрактный класс шаблон для реализации частей главного окна
  */
 public abstract class UIMainChildAbstractController {
-    final UIMainFormController mainController;
+    UIMainFormController mainController;
     ResourceBundle resourceBundle;
     Node currentNode;
     MainFormStage stage = MainFormStage.SELECT_BASE_PATH;
     ResourceBundle textResource = ResourceBundle.getBundle("ui.uimainlocale",
             Locale.getDefault());
 
-    public UIMainChildAbstractController(UIMainFormController mainController, ResourceBundle resourceBundle) throws IOException {
-        this.mainController = mainController;
-        this.resourceBundle = resourceBundle;
-        currentNode = loadNode(getFXMLPath());
-        setStage(stage);
+    UIMainChildAbstractController() {
+
     }
 
     /**
-     * Возвращает путь к файлу FXML для закрузки элемента
-     *
-     * @return путь к файлу FXML
+     *  TODO переделать - вынести загрузку в UIFactory переделать инициализацию.
+     * @param resourcePath
+     * @param mainController
+     * @param resourceBundle
+     * @return
+     * @throws IOException
      */
-    public abstract String getFXMLPath();
-
-    Node loadNode(String resourcePath) throws IOException {
-        URL xmlUrl = getClass().getResource(resourcePath);
+    public UIMainChildAbstractController loadNode(String resourcePath, UIMainFormController mainController, ResourceBundle resourceBundle) throws IOException {
+        URL xmlUrl = UIMainChildAbstractController.class.getResource(resourcePath);
         FXMLLoader loader = new FXMLLoader(xmlUrl,resourceBundle);
+        UIMainChildAbstractController controller = loader.getController();
         Parent root = loader.load();
-        return root;
+        root.setVisible(false);
+        controller.currentNode = root;
+        controller.mainController = mainController;
+        controller.resourceBundle = resourceBundle;
+        return controller;
     }
 
     /**
@@ -56,7 +59,16 @@ public abstract class UIMainChildAbstractController {
     }
 
     /**
-     * Обновляет элемент в соотвествией со стадией программы
+     * Получает элемент
+     *
+     * @return Node
+     */
+    public Node getNode() {
+        return currentNode;
+    }
+
+    /**
+     * Обновляет элемент в соотвествии со стадией программы
      */
     public abstract void update();
 }

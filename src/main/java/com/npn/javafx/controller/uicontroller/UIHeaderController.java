@@ -17,15 +17,18 @@ import java.util.ResourceBundle;
  */
 public class UIHeaderController extends UIMainChildAbstractController {
 
+    UIHeaderController() {
+    }
+
     @FXML
     private TextFlow textFlow;
 
-    public UIHeaderController(UIMainFormController mainController, ResourceBundle resourceBundle) throws IOException {
-        super(mainController,resourceBundle);
-    }
-
-    @Override
-    public String getFXMLPath() {
+    /**
+     * Возвращает путь к файлу FXML для закрузки элемента
+     *
+     * @return путь к файлу FXML
+     */
+    public static String getFXMLPath() {
         return "/ui/UIMainForm.fxml";
     }
 
@@ -42,7 +45,7 @@ public class UIHeaderController extends UIMainChildAbstractController {
      * @param resourceText строка из ui/uimainlocale.properties
      */
     private void updateText(String resourceText) {
-        Text text = new Text(resourceBundle.getString(resourceText));
+        Text text = new Text(textResource.getString(resourceText));
         text.setFill(Color.BLACK);
         text.setFont(Font.font("sans-serif", FontPosture.ITALIC,15));
         ObservableList<Node> list = textFlow.getChildren();
