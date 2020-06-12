@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ResourceBundle;
 
 /**
  * Контроллер для UISelectFilesForm.fxml
@@ -30,27 +29,28 @@ public class UISelectFilesFormController extends UIMainChildAbstractController {
 
     private FileItemTableView table;
 
-    public UISelectFilesFormController() {
-    }
-
-    /**
+     /**
      * Возвращает путь к файлу FXML для закрузки элемента
      *
      * @return путь к файлу FXML
      */
     public static String getFXMLPath() {
-        return "ui/UISelectFilesForm.fxml";
+        return "/ui/UISelectFilesForm.fxml";
     }
 
-
-
+    /**
+     * Инициализация переменных и объектов контроллера
+     *
+     * @param currentNode
+     * @param mainController
+     * @throws IOException
+     */
     @Override
-    Node loadNode(String resourcePath) throws IOException {
-        Node node = super.loadNode(resourcePath);
+    public void init(Node currentNode, UIMainFormController mainController) throws IOException {
+        super.init(currentNode, mainController);
         FileItemTableView table = new FileItemTableView(fileTable,textResource);
         table.init();
         this.table = table;
-        return node;
     }
 
     /**
@@ -62,9 +62,18 @@ public class UISelectFilesFormController extends UIMainChildAbstractController {
             currentNode.setVisible(true);
         } else {
             currentNode.setVisible(false);
-            mainController.setFilesListIsValid(table==null? false:table.isDataValid());
             mainController.setTableItems(table.getTableFileItems());
         }
+    }
+
+    /**
+     * Выводит правильные ли данные на форме
+     *
+     * @return
+     */
+    @Override
+    public boolean isValid() {
+        return table != null && table.isDataValid();
     }
 
     public void selectDir() {

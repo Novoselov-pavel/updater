@@ -142,13 +142,13 @@ public class TableFileItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TableFileItem fileItem = (TableFileItem) o;
-        return Objects.equals(path, fileItem.path) &&
-                Objects.equals(relativePath, fileItem.relativePath);
+        return Objects.equals(path.getValue(), fileItem.path.getValue()) &&
+                Objects.equals(relativePath.getValue(), fileItem.relativePath.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, relativePath);
+        return Objects.hash(path.getValue(), relativePath.getValue());
     }
 
 

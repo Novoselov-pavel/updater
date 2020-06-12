@@ -8,12 +8,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.DirectoryChooser;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.ResourceBundle;
 
 /**
  * Контроллер для UISelectPathForm.fxml
@@ -26,15 +23,17 @@ public class UISelectPathFormController extends UIMainChildAbstractController {
     @FXML
     private TextArea textPathArray;
 
-    public UISelectPathFormController(UIMainFormController mainController, ResourceBundle resourceBundle) throws IOException {
-        super(mainController, resourceBundle);
-    }
-
+    /**
+     * Инициализация переменных и объектов контроллера
+     *
+     * @param currentNode
+     * @param mainController
+     * @throws IOException
+     */
     @Override
-    Node loadNode(String resourcePath) throws IOException {
-        Node node = super.loadNode(resourcePath);
+    public void init(Node currentNode, UIMainFormController mainController) throws IOException {
+        super.init(currentNode, mainController);
         textPathArray.addEventHandler(KeyEvent.KEY_RELEASED,new TextAreaCheck(IsStringDirPath::test));
-        return node;
     }
 
     /**
@@ -42,9 +41,8 @@ public class UISelectPathFormController extends UIMainChildAbstractController {
      *
      * @return путь к файлу FXML
      */
-    @Override
-    public String getFXMLPath() {
-        return "ui/UISelectPathForm.fxml";
+    public static String getFXMLPath() {
+        return "/ui/UISelectPathForm.fxml";
     }
 
     /**
@@ -58,6 +56,16 @@ public class UISelectPathFormController extends UIMainChildAbstractController {
             mainController.setBasePath(textPathArray.getText());
             currentNode.setVisible(false);
         }
+    }
+
+    /**
+     * Выводит правильные ли данные на форме
+     *
+     * @return
+     */
+    @Override
+    public boolean isValid() {
+        return true;
     }
 
 

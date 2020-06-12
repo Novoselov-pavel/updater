@@ -73,8 +73,26 @@ public class ArchiveItemTableView {
 
     public void addAllArchiveObject(TableFileItem[] items) {
         ///для объектов которые не требуют упаковки
+        if (!isSomeItems(items)) {
+            fileDate.clear();
+            Collection<ArchiveObject> collection = transformToArchiveObject(items);
+            fileDate.addAll(collection);
+        }
+    }
+
+    /**
+     * Проверяет было ли изменение элементов
+     *
+     * @param items
+     * @return
+     */
+    private boolean isSomeItems (TableFileItem[] items) {
         Collection<ArchiveObject> collection = transformToArchiveObject(items);
-        fileDate.addAll(collection);
+        if (collection.size()!=fileDate.size()) return false;
+        for (ArchiveObject archiveObject : fileDate) {
+            if (!collection.contains(archiveObject)) return false;
+        }
+        return true;
     }
 
     public static List<ArchiveObject> transformToArchiveObject (TableFileItem[] items) {
@@ -184,6 +202,21 @@ public class ArchiveItemTableView {
 
         public void setName(String name) {
             this.name.set(name);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ArchiveObject that = (ArchiveObject) o;
+            return needPack == that.needPack &&
+                    Objects.equals(pathToUnpack.getValue(), that.pathToUnpack.getValue()) &&
+                    Objects.equals(fileItems, that.fileItems);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(pathToUnpack.getValue(), needPack, fileItems);
         }
     }
 }

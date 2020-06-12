@@ -16,34 +16,25 @@ import java.util.ResourceBundle;
  */
 public abstract class UIMainChildAbstractController {
     UIMainFormController mainController;
-    ResourceBundle resourceBundle;
     Node currentNode;
     MainFormStage stage = MainFormStage.SELECT_BASE_PATH;
     ResourceBundle textResource = ResourceBundle.getBundle("ui.uimainlocale",
             Locale.getDefault());
 
-    UIMainChildAbstractController() {
+    public UIMainChildAbstractController() {
 
     }
 
     /**
-     *  TODO переделать - вынести загрузку в UIFactory переделать инициализацию.
-     * @param resourcePath
+     * Инициализация переменных и объектов контроллера
+     *
+     * @param currentNode
      * @param mainController
-     * @param resourceBundle
-     * @return
      * @throws IOException
      */
-    public UIMainChildAbstractController loadNode(String resourcePath, UIMainFormController mainController, ResourceBundle resourceBundle) throws IOException {
-        URL xmlUrl = UIMainChildAbstractController.class.getResource(resourcePath);
-        FXMLLoader loader = new FXMLLoader(xmlUrl,resourceBundle);
-        UIMainChildAbstractController controller = loader.getController();
-        Parent root = loader.load();
-        root.setVisible(false);
-        controller.currentNode = root;
-        controller.mainController = mainController;
-        controller.resourceBundle = resourceBundle;
-        return controller;
+    public void init(Node currentNode, UIMainFormController mainController) throws IOException {
+        this.mainController = mainController;
+        this.currentNode = currentNode;
     }
 
     /**
@@ -71,4 +62,11 @@ public abstract class UIMainChildAbstractController {
      * Обновляет элемент в соотвествии со стадией программы
      */
     public abstract void update();
+
+    /**
+     * Выводит правильные ли данные на форме
+     *
+     * @return
+     */
+    public abstract boolean isValid();
 }

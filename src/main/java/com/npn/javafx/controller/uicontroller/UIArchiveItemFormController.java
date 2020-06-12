@@ -7,7 +7,6 @@ import javafx.scene.Node;
 import javafx.scene.control.TableView;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 public class UIArchiveItemFormController extends UIMainChildAbstractController {
 
@@ -16,27 +15,25 @@ public class UIArchiveItemFormController extends UIMainChildAbstractController {
 
     private ArchiveItemTableView archiveItemTable = null;
 
-    public UIArchiveItemFormController(UIMainFormController mainController, ResourceBundle resourceBundle) throws IOException {
-        super(mainController, resourceBundle);
+
+    public static String getFXMLPath() {
+        return "/ui/UIArchiveItemForm.fxml";
     }
+
 
     /**
-     * Возвращает путь к файлу FXML для закрузки элемента
+     * Инициализация переменных и объектов контроллера
      *
-     * @return путь к файлу FXML
+     * @param currentNode
+     * @param mainController
+     * @throws IOException
      */
     @Override
-    public String getFXMLPath() {
-        return "ui/UIArchiveItemForm.fxml";
-    }
-
-    @Override
-    Node loadNode(String resourcePath) throws IOException {
-        Node node = super.loadNode(resourcePath);
+    public void init(Node currentNode, UIMainFormController mainController) throws IOException {
+        super.init(currentNode, mainController);
         ArchiveItemTableView archiveItemTable = new ArchiveItemTableView(packTable,textResource);
         archiveItemTable.init();
         this.archiveItemTable = archiveItemTable;
-        return node;
     }
 
     /**
@@ -50,5 +47,15 @@ public class UIArchiveItemFormController extends UIMainChildAbstractController {
         } else {
             currentNode.setVisible(false);
         }
+    }
+
+    /**
+     * Выводит правильные ли данные на форме
+     *
+     * @return
+     */
+    @Override
+    public boolean isValid() {
+        return true;
     }
 }

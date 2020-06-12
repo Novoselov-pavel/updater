@@ -17,19 +17,17 @@ import java.util.ResourceBundle;
  */
 public class UIHeaderController extends UIMainChildAbstractController {
 
-    UIHeaderController() {
-    }
 
     @FXML
     private TextFlow textFlow;
 
     /**
-     * Возвращает путь к файлу FXML для закрузки элемента
+     * Возвращает путь к файлу FXML для загрузки элемента
      *
      * @return путь к файлу FXML
      */
     public static String getFXMLPath() {
-        return "/ui/UIMainForm.fxml";
+        return "/ui/UIHeader.fxml";
     }
 
     /**
@@ -37,6 +35,17 @@ public class UIHeaderController extends UIMainChildAbstractController {
      */
     public void update() {
         updateText(stage.getHeaderText());
+        currentNode.setVisible(true);
+    }
+
+    /**
+     * Выводит правильные ли данные на форме
+     *
+     * @return
+     */
+    @Override
+    public boolean isValid() {
+        return true;
     }
 
     /**

@@ -1,20 +1,14 @@
 package com.npn.javafx;
 
 import com.npn.javafx.controller.uicontroller.BashController;
-import com.npn.javafx.controller.uicontroller.UIFactory;
-import com.npn.javafx.controller.uicontroller.UIMainFormController;
+import com.npn.javafx.controller.uifactory.UIFactory;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;

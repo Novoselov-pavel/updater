@@ -7,9 +7,6 @@ package com.npn.javafx.controller.uicontroller;
         import javafx.event.ActionEvent;
         import javafx.event.EventHandler;
         import javafx.fxml.FXML;
-        import javafx.fxml.FXMLLoader;
-        import javafx.scene.Parent;
-        import javafx.scene.Scene;
         import javafx.scene.control.*;
         import javafx.scene.layout.AnchorPane;
         import javafx.stage.Stage;
@@ -17,8 +14,7 @@ package com.npn.javafx.controller.uicontroller;
 
         import java.io.File;
         import java.io.IOException;
-        import java.net.URL;
-        import java.util.Arrays;
+        import java.util.List;
         import java.util.Locale;
         import java.util.ResourceBundle;
         import java.util.stream.Collectors;
@@ -39,11 +35,9 @@ public class UIMainFormController {
 
     private TableFileItem[] tableItems = new TableFileItem[0];
 
-    private final String mainWindowsPath = "/ui/UIMainForm.fxml";
-
     private UIHeaderController headerController;
 
-    private UIMainChildAbstractController[]  childrenUiFormControllers;
+    private List<UIMainChildAbstractController> childControllers;
 
     public UIMainFormController() {
     }
@@ -64,20 +58,25 @@ public class UIMainFormController {
     private AnchorPane headerPane;
 
     /**
+     * Возвращает путь к файлу FXML для закрузки элемента
+     *
+     * @return путь к файлу FXML
+     */
+    public static String getFXMLPath() {
+        return "/ui/UIMainForm.fxml";
+    }
+
+
+    /**
      * Инициализация mainWindows
      * @param mainWindows ссылка на основное окно
      */
-    public void init(Stage mainWindows, UIHeaderController headerController, UIMainChildAbstractController ... childrenUiFormControllers) throws IOException {
+    public void init(Stage mainWindows, UIHeaderController headerController, List<UIMainChildAbstractController> childControllers) throws IOException {
 
         this.headerController = headerController;
-        this.childrenUiFormControllers = childrenUiFormControllers;
+        this.childControllers = childControllers;
 
-        URL xmlUrl = getClass().getResource(mainWindowsPath);
-        FXMLLoader loader = new FXMLLoader(xmlUrl, resourceBundle);
-        loader.setController(this);
 
-        Parent root = loader.load();
-        mainWindows.setScene(new Scene(root));
 
 
         this.mainWindows = mainWindows;
@@ -89,7 +88,8 @@ public class UIMainFormController {
 
         headerPane.getChildren().add(headerController.getNode());
 
-        mainAnchorPanel.getChildren().addAll(Arrays.stream(childrenUiFormControllers).map(UIMainChildAbstractController::getNode).collect(Collectors.toList()));
+        mainAnchorPanel.getChildren().addAll(childControllers.stream().map(UIMainChildAbstractController::getNode).collect(Collectors.toList()));
+        changeStage(stage);
 
     }
 
@@ -148,7 +148,7 @@ public class UIMainFormController {
             throw new IllegalArgumentException();
         }
         headerController.setStage(stage);
-        Arrays.stream(childrenUiFormControllers).forEach(x->x.setStage(stage));
+        childControllers.forEach(x->x.setStage(stage));
     }
 
 
@@ -173,13 +173,6 @@ public class UIMainFormController {
             if (stage.ordinal() >= MainFormStage.values().length - 1) {
                 ///TODO обработчик запуска в работу
                 return;
-            } else if (stage == MainFormStage.CHECK_INPUT) {
-                if (!isDataValid) {
-                    stage = MainFormStage.CHECK_INPUT;
-                } else {
-                    stage = MainFormStage.values()[stage.ordinal() + 1];
-                    changeStage(stage);
-                }
             } else {
                 stage = MainFormStage.values()[stage.ordinal() + 1];
                 changeStage(stage);
