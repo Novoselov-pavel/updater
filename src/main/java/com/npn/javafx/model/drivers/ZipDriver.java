@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import java.util.Map;
 
 
 /**Класс для работы с zip файлами
@@ -66,18 +66,16 @@ public class ZipDriver implements ArchiveDriver {
 
 
 
-    /**
-     * Упаковываем файлы в архив
+    /** Упаковываем файлы в архивов
      *
-     * @param files               список {@link FileItem} которые надо упаковать
-     * @param basePath            адрес папки относительно которой рассчитываются относительные пути в архиве
-     * @param zipFilePath         адрес архива
-     * @param filesSystemCharset кодировка консоли файловой системы (для Windows CP866)
+     * @param files мапа где ключ - {@link FileItem} которые надо упаковать, значение - строка пути в Zip файле
+     * @param zipFilePath адрес места хранения архива
+     * @param filesSystemCharset  кодировка консоли файловой системы (для Windows CP866)
      * @return {@link FileItem} архива
      * @throws Exception при ошибках
      */
     @Override
-    public FileItem pack(final List<FileItem> files,final Path basePath,final Path zipFilePath,final Charset filesSystemCharset) throws Exception {
+    public FileItem pack(final Map<FileItem,String> files, final Path zipFilePath, final Charset filesSystemCharset) throws Exception {
         String logFormat = "Pack files to\t%s\tFileSystemCharset\t%s";
         logger.debug(String.format(logFormat,zipFilePath.toString(), filesSystemCharset.toString()));
 
@@ -92,11 +90,11 @@ public class ZipDriver implements ArchiveDriver {
         try(ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zipFilePath))) {
             zipOutputStream.setEncoding(filesSystemCharset.toString());
             zipOutputStream.setUseZip64(Zip64Mode.Always);
-            for (FileItem file : files) {
-                long crc = packFileItem(zipOutputStream,file,basePath,filesSystemCharset);
-                if (crc!=file.getCRC32()) {
+            for (Map.Entry<FileItem, String> entry : files.entrySet()) {
+                long crc = packFileItem(zipOutputStream,entry.getKey(),entry.getValue(),filesSystemCharset);
+                if (crc!=entry.getKey().getCRC32()) {
                     logFormat = "Wrong CRC at file\t%s\texpected: %d\tcalculated: %d";
-                    logger.warn(String.format(logFormat,file.getPath().toString(), file.getCRC32(), crc));
+                    logger.warn(String.format(logFormat,entry.getKey().getPath().toString(), entry.getKey().getCRC32(), crc));
                 }
             }
 
@@ -202,6 +200,15 @@ public class ZipDriver implements ArchiveDriver {
      */
     private String getZipDirectory (Path path) {
         String s = path.toString();
+        return getZipDirectory(s);
+    }
+
+    /**Modified path to string with end symbol "/" in accordance with requirement  org.apache.tools.zip.ZipEntry;
+     * @param path input directory path
+     * @return string
+     */
+    private String getZipDirectory (String path) {
+        String s = path;
         String endString = System.getProperty("file.separator");
         if (s.endsWith(endString)) {
             s = s.substring(0,s.length()-endString.length());
@@ -234,33 +241,33 @@ public class ZipDriver implements ArchiveDriver {
      *
      * @param outputStream поток вывода
      * @param file файл который упаковывается
-     * @param basePath  путь с помощью которого определяется относительный адрес в архиве
+     * @param destinationPath  путь назначения с помощью которого определяется относительный адрес в архиве
      * @param filesSystemCharset кодировка консоли файловой системы (для Windows CP866)
      * @return CRC32 для упакованного файла
      * @throws Exception
      */
-    private long packFileItem(final ZipOutputStream outputStream, final FileItem file, final Path basePath, final Charset filesSystemCharset) throws Exception {
+    private long packFileItem(final ZipOutputStream outputStream, final FileItem file, final String destinationPath, final Charset filesSystemCharset) throws Exception {
 
         String logFormat = "Start Pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
-        logger.info(String.format(logFormat,file.getPath().toString(), basePath.toString(), filesSystemCharset.toString()));
+        logger.info(String.format(logFormat,file.getPath().toString(), destinationPath, filesSystemCharset.toString()));
 
         if (Files.isDirectory(file.getPath()) || Files.isSymbolicLink(file.getPath())) {
-            String zipEntryPathString = new String(getZipDirectory(basePath.relativize(file.getPath())).getBytes(filesSystemCharset.toString()),filesSystemCharset.toString());
+            String zipEntryPathString = new String(getZipDirectory(destinationPath).getBytes(filesSystemCharset.toString()),filesSystemCharset.toString());
             ZipEntry entry = new ZipEntry(zipEntryPathString);
             outputStream.putNextEntry(entry);
             outputStream.closeEntry();
             logFormat = "End Pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
-            logger.info(String.format(logFormat,file.getPath().toString(), basePath.toString(), filesSystemCharset.toString()));
+            logger.info(String.format(logFormat,file.getPath().toString(), destinationPath, filesSystemCharset.toString()));
             return 0L;
         } else if (Files.isRegularFile(file.getPath())) {
-            String zipEntryPathString = new String(basePath.relativize(file.getPath()).toString().getBytes(filesSystemCharset.toString()),filesSystemCharset.toString());
+            String zipEntryPathString = new String(destinationPath.getBytes(filesSystemCharset.toString()),filesSystemCharset.toString());
             ZipEntry entry = new ZipEntry(zipEntryPathString);
             try(InputStream stream = Files.newInputStream(file.getPath())) {
                 outputStream.putNextEntry(entry);
                 long crc = writeInputStreamToOutputStream(stream,outputStream);
                 outputStream.closeEntry();
                 logFormat = "End Pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
-                logger.info(String.format(logFormat,file.getPath().toString(), basePath.toString(), filesSystemCharset.toString()));
+                logger.info(String.format(logFormat,file.getPath().toString(), destinationPath, filesSystemCharset.toString()));
                 return crc;
             }
 

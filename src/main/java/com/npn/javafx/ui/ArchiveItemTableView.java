@@ -122,6 +122,9 @@ public class ArchiveItemTableView {
         return retArray;
     }
 
+    public List<ArchiveObject> getArchiveObjectList() {
+        return fileDate.stream().collect(Collectors.toUnmodifiableList());
+    }
 
     /**
      * Проверят является ли переданный путь отностельным относительно базовго пути

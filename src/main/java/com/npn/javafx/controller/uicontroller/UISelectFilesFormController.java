@@ -76,6 +76,16 @@ public class UISelectFilesFormController extends UIMainChildAbstractController {
         return table != null && table.isDataValid();
     }
 
+    /**
+     * Возвращает стадию к которой относится данная форма
+     *
+     * @return stage
+     */
+    @Override
+    public MainFormStage getFormStage() {
+        return MainFormStage.SELECT_FILE;
+    }
+
     public void selectDir() {
         UIOpenFileDialog openFileDialog = new UIOpenFileDialog(mainController.getMainWindows(),
                 textResource,

@@ -69,4 +69,11 @@ public abstract class UIMainChildAbstractController {
      * @return
      */
     public abstract boolean isValid();
+
+    /**
+     * Возвращает стадию к которой относится данная форма
+     *
+     * @return stage
+     */
+    public abstract MainFormStage getFormStage();
 }

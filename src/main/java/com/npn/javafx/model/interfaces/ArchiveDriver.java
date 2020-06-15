@@ -6,6 +6,7 @@ import com.npn.javafx.model.FileItem;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
 /**Интерфейс предназначен для упаковки/распаковки архивов
  *
@@ -24,18 +25,19 @@ public interface ArchiveDriver {
 
     /** Упаковываем файлы в архивов
      *
-     * @param files список {@link FileItem} которые надо упаковать
-     * @param basePath адрес папки относительно которой рассчитываются относительные пути в архиве
-     * @param zipFilePath адрес архива
+     * @param files мапа где ключ - {@link FileItem} которые надо упаковать, значение - строка пути в Zip файле
+     * @param zipFilePath адрес места хранения архива
      * @param filesSystemCharset  кодировка консоли файловой системы (для Windows CP866)
      * @return {@link FileItem} архива
      * @throws Exception при ошибках
      */
-    FileItem pack(List<FileItem> files, Path basePath, Path zipFilePath, Charset filesSystemCharset) throws Exception;
+    FileItem pack(Map<FileItem,String> files, Path zipFilePath, Charset filesSystemCharset) throws Exception;
 
     /** Возвращает список расширений файлов для которых предназначена имплементация интрефейса
      *
      * @return список расширений в формате ".zip", ".rar".
      */
     List<String> getExtensions();
+
+
 }

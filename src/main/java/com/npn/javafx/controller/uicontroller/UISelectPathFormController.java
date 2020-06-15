@@ -68,6 +68,16 @@ public class UISelectPathFormController extends UIMainChildAbstractController {
         return true;
     }
 
+    /**
+     * Возвращает стадию к которой относится данная форма
+     *
+     * @return stage
+     */
+    @Override
+    public MainFormStage getFormStage() {
+        return MainFormStage.SELECT_BASE_PATH;
+    }
+
 
     /**
      * Обработчик нажатия кнопки

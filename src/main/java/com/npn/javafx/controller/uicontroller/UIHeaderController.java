@@ -1,5 +1,6 @@
 package com.npn.javafx.controller.uicontroller;
 
+import com.npn.javafx.model.MainFormStage;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -46,6 +47,16 @@ public class UIHeaderController extends UIMainChildAbstractController {
     @Override
     public boolean isValid() {
         return true;
+    }
+
+    /**
+     * Возвращает стадию к которой относится данная форма
+     *
+     * @return null для данного элемента, так как он относится ко всем стадиям
+     */
+    @Override
+    public MainFormStage getFormStage() {
+        return null;
     }
 
     /**

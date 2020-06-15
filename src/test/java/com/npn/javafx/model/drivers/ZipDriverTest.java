@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,16 +43,21 @@ class ZipDriverTest {
             List<String> filesPathToPack = parse.getFilesAddress(inputFiles);
             ArchiveDriver driver = new ZipDriver();
             CRC32Calculator crc32Calculator = new CRC32Calculator();
-            List<FileItem>  fileItemListToPack = filesPathToPack.stream().
-                                                                    map(x->new FileItem(Paths.get(x))).collect(Collectors.toList());
-            for (FileItem item : fileItemListToPack) {
+            Map<FileItem,String> fileItemListToPack = filesPathToPack.stream().collect(Collectors.toMap(x->new FileItem(Paths.get(x)),x->getRelativePath(x,inputFiles)));
+            for (FileItem item : fileItemListToPack.keySet()) {
                 item.setCRC32(crc32Calculator.getCRC32(item.getPath()));
             }
-            zipFile = driver.pack(fileItemListToPack,Paths.get(inputFiles), Paths.get(outputZipFile),currentCharset);
+            zipFile = driver.pack(fileItemListToPack, Paths.get(outputZipFile),currentCharset);
         } catch (Exception e) {
             e.printStackTrace();
             fail();
         }
+    }
+
+    private String getRelativePath(String path, String basePath) {
+        Path inputPath = Paths.get(path);
+        Path base = Paths.get(basePath);
+        return base.relativize(inputPath).toString();
     }
 
     @Test

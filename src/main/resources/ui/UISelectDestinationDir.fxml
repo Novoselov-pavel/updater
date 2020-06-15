@@ -10,7 +10,7 @@
    <children>
       <GridPane hgap="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="195.0" minWidth="140.0" prefWidth="140.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="300.0" minWidth="195.0" prefWidth="300.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="300.0" minWidth="140.0" prefWidth="300.0" />
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -30,7 +30,7 @@
                   <Font size="14.0" />
                </font>
             </TextField>
-            <Label fx:id="versionLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="130.0" text="Label" GridPane.valignment="CENTER">
+            <Label fx:id="versionLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="280.0" text="%Text.AddVersion" GridPane.valignment="CENTER">
                <font>
                   <Font size="14.0" />
                </font>
@@ -41,12 +41,15 @@
                   <Insets left="10.0" />
                </padding>
             </Label>
-            <Button fx:id="openFolder" mnemonicParsing="false" prefHeight="30.0" prefWidth="120.0" text="Button" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <Button fx:id="openFolder" mnemonicParsing="false" prefHeight="30.0" prefWidth="280.0" text="%Text.SelectPath" GridPane.rowIndex="1" GridPane.valignment="CENTER" onAction="#selectDir">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
             </Button>
-            <TextField fx:id="folderPathField" prefHeight="60.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <TextArea fx:id="folderPathField" prefHeight="60.0" prefWidth="300.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="pathStatus" fitHeight="30.0" fitWidth="30.0" layoutX="462.0" layoutY="70.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
          </children>
       </GridPane>

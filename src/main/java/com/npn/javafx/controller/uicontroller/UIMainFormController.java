@@ -2,6 +2,7 @@ package com.npn.javafx.controller.uicontroller;
 
         import com.npn.javafx.Updater;
         import com.npn.javafx.model.MainFormStage;
+        import com.npn.javafx.ui.ArchiveItemTableView;
         import com.npn.javafx.ui.TableFileItem;
         import javafx.application.Platform;
         import javafx.event.ActionEvent;
@@ -38,6 +39,8 @@ public class UIMainFormController {
     private UIHeaderController headerController;
 
     private List<UIMainChildAbstractController> childControllers;
+
+    private List<ArchiveItemTableView.ArchiveObject> archiveItemsList = null;
 
     public UIMainFormController() {
     }
@@ -135,6 +138,14 @@ public class UIMainFormController {
         this.filesListIsValid = filesListIsValid;
     }
 
+    public List<ArchiveItemTableView.ArchiveObject> getArchiveItemsList() {
+        return archiveItemsList;
+    }
+
+    public void setArchiveItemsList(List<ArchiveItemTableView.ArchiveObject> archiveItemsList) {
+        this.archiveItemsList = archiveItemsList;
+    }
+
     public TableFileItem[] getTableItems() {
         return tableItems;
     }
@@ -174,8 +185,10 @@ public class UIMainFormController {
                 ///TODO обработчик запуска в работу
                 return;
             } else {
-                stage = MainFormStage.values()[stage.ordinal() + 1];
-                changeStage(stage);
+                if (childControllers.stream().filter(x->x.getFormStage().ordinal()<=stage.ordinal()).allMatch(UIMainChildAbstractController::isValid)) {
+                    stage = MainFormStage.values()[stage.ordinal() + 1];
+                    changeStage(stage);
+                }
             }
         }
     }

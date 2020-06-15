@@ -1,24 +1,16 @@
 package com.npn.javafx.controller.uicontroller;
 
+
 import com.npn.javafx.model.MainFormStage;
 import com.npn.javafx.ui.ArchiveItemTableView;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.TableView;
 
 import java.io.IOException;
+import java.util.List;
 
-public class UIArchiveItemFormController extends UIMainChildAbstractController {
+public class UIPackingFormController extends UIMainChildAbstractController {
 
-    @FXML
-    private TableView<ArchiveItemTableView.ArchiveObject> packTable;
-
-    private ArchiveItemTableView archiveItemTable = null;
-
-
-    public static String getFXMLPath() {
-        return "/ui/UIArchiveItemForm.fxml";
-    }
+    private List<ArchiveItemTableView.ArchiveObject> archiveObjects = null;
 
 
     /**
@@ -31,9 +23,6 @@ public class UIArchiveItemFormController extends UIMainChildAbstractController {
     @Override
     public void init(Node currentNode, UIMainFormController mainController) throws IOException {
         super.init(currentNode, mainController);
-        ArchiveItemTableView archiveItemTable = new ArchiveItemTableView(packTable,textResource);
-        archiveItemTable.init();
-        this.archiveItemTable = archiveItemTable;
     }
 
     /**
@@ -41,13 +30,17 @@ public class UIArchiveItemFormController extends UIMainChildAbstractController {
      */
     @Override
     public void update() {
-        if (stage == MainFormStage.DISTR_VIEW) {
+        if (stage == getFormStage()) {
             currentNode.setVisible(true);
-            archiveItemTable.addAllArchiveObject(mainController.getTableItems());
+            archiveObjects = mainController.getArchiveItemsList();
+
         } else {
             currentNode.setVisible(false);
-            if (archiveItemTable!=null) mainController.setArchiveItemsList(archiveItemTable.getArchiveObjectList());
         }
+    }
+
+    public static String getFXMLPath() {
+        return "/ui/UIPackingForm.fxml";
     }
 
     /**
@@ -57,7 +50,7 @@ public class UIArchiveItemFormController extends UIMainChildAbstractController {
      */
     @Override
     public boolean isValid() {
-        return true;
+        return false;
     }
 
     /**
@@ -67,7 +60,9 @@ public class UIArchiveItemFormController extends UIMainChildAbstractController {
      */
     @Override
     public MainFormStage getFormStage() {
-        return MainFormStage.DISTR_VIEW;
+        return MainFormStage.PACK_DISTR;
     }
+
+    //TODO остановился тут
 
 }

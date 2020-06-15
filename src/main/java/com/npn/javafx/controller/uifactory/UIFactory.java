@@ -51,6 +51,8 @@ public class UIFactory {
 
     /**
      *
+     * Загружает дочерние формы
+     *
      * @param stage
      * @param resourceBundle
      * @param mainController
@@ -68,7 +70,7 @@ public class UIFactory {
             case SELECT_DESTINATION_DIR:
                 return loadChildNode(UISelectDestinationDirController.getFXMLPath(),resourceBundle,mainController);
             case PACK_DISTR:
-                return null; //TODO
+                return loadChildNode(UIPackingFormController.getFXMLPath(),resourceBundle,mainController); //TODO
             default:
                 return null;
 
