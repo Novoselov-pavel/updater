@@ -183,6 +183,15 @@ public class ArchiveItemTableView {
             return pathToUnpack.getValue();
         }
 
+        /**
+         * TODO
+         *
+         * @return
+         */
+        public Path getZipFilePath() {
+            return Paths.get(getName());
+        }
+
         public StringProperty pathToUnpackProperty() {
             return pathToUnpack;
         }

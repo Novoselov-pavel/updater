@@ -3,6 +3,7 @@ package com.npn.javafx.model.drivers;
 import com.npn.javafx.model.CRC32Calculator;
 import com.npn.javafx.model.FileItem;
 import com.npn.javafx.model.interfaces.ArchiveDriver;
+import com.npn.javafx.ui.UIMessage;
 import org.apache.tools.zip.Zip64Mode;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipFile;
@@ -32,6 +33,7 @@ public class ZipDriver implements ArchiveDriver {
     private final CRC32Calculator crc32 = new CRC32Calculator();
     private static final Logger logger = LoggerFactory.getLogger(ZipDriver.class);
     private final int BUFFER_SIZE = 8192;
+    private static final UIMessage uiMessage = UIMessage.getUiMessage();
 
     /**
      * Распаковывает файлы из архива
@@ -79,8 +81,9 @@ public class ZipDriver implements ArchiveDriver {
         String logFormat = "Pack files to\t%s\tFileSystemCharset\t%s";
         logger.debug(String.format(logFormat,zipFilePath.toString(), filesSystemCharset.toString()));
 
-        logFormat = "Start Pack files to\t%s\tFileSystemCharset\t%s";
+        logFormat = "Start pack files to\t%s\tFileSystemCharset\t%s";
         logger.info(String.format(logFormat,zipFilePath.toString(), filesSystemCharset.toString()));
+        uiMessage.sendMessage(logFormat,zipFilePath.toString(),filesSystemCharset.toString());
 
         try {
           Files.createDirectories(zipFilePath.getParent());
@@ -103,8 +106,9 @@ public class ZipDriver implements ArchiveDriver {
         FileItem packFile = new FileItem(zipFilePath);
         CRC32Calculator crc32 = new CRC32Calculator();
         packFile.setCRC32(crc32.getCRC32(zipFilePath));
-        logFormat = "End Pack files to\t%s\tFileSystemCharset\t%s";
+        logFormat = "End pack files to\t%s\tFileSystemCharset\t%s";
         logger.info(String.format(logFormat,zipFilePath.toString(), filesSystemCharset.toString()));
+        uiMessage.sendMessage(logFormat,zipFilePath.toString(),filesSystemCharset.toString());
         return packFile;
     }
 
@@ -248,16 +252,18 @@ public class ZipDriver implements ArchiveDriver {
      */
     private long packFileItem(final ZipOutputStream outputStream, final FileItem file, final String destinationPath, final Charset filesSystemCharset) throws Exception {
 
-        String logFormat = "Start Pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
+        String logFormat = "Start pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
         logger.info(String.format(logFormat,file.getPath().toString(), destinationPath, filesSystemCharset.toString()));
+        uiMessage.sendMessage(logFormat,file.getPath().toString(),destinationPath, filesSystemCharset.toString());
 
         if (Files.isDirectory(file.getPath()) || Files.isSymbolicLink(file.getPath())) {
             String zipEntryPathString = new String(getZipDirectory(destinationPath).getBytes(filesSystemCharset.toString()),filesSystemCharset.toString());
             ZipEntry entry = new ZipEntry(zipEntryPathString);
             outputStream.putNextEntry(entry);
             outputStream.closeEntry();
-            logFormat = "End Pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
+            logFormat = "End pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
             logger.info(String.format(logFormat,file.getPath().toString(), destinationPath, filesSystemCharset.toString()));
+            uiMessage.sendMessage(logFormat,file.getPath().toString(),destinationPath, filesSystemCharset.toString());
             return 0L;
         } else if (Files.isRegularFile(file.getPath())) {
             String zipEntryPathString = new String(destinationPath.getBytes(filesSystemCharset.toString()),filesSystemCharset.toString());
@@ -266,14 +272,16 @@ public class ZipDriver implements ArchiveDriver {
                 outputStream.putNextEntry(entry);
                 long crc = writeInputStreamToOutputStream(stream,outputStream);
                 outputStream.closeEntry();
-                logFormat = "End Pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
+                logFormat = "End pack file\t%s\tto\t%s\tFileSystemCharset\t%s";
                 logger.info(String.format(logFormat,file.getPath().toString(), destinationPath, filesSystemCharset.toString()));
+                uiMessage.sendMessage(logFormat,file.getPath().toString(),destinationPath, filesSystemCharset.toString());
                 return crc;
             }
 
         }
         logFormat = "File type not supported for \t%s";
         logger.warn(String.format(logFormat,file.getPath().toString()));
+        uiMessage.sendMessage(logFormat,file.getPath().toString());
         return 0L;
     }
 }
