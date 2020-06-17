@@ -1,5 +1,9 @@
 package com.npn.javafx.model;
 
+import com.npn.javafx.model.drivers.parsers.FileSystemDirParse;
+import com.npn.javafx.model.interfaces.FilesParser;
+import com.npn.javafx.ui.ArchiveItemTableView;
+import com.npn.javafx.ui.TableFileItem;
 import jakarta.xml.bind.ValidationEventHandler;
 import jakarta.xml.bind.annotation.*;
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
@@ -7,8 +11,13 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**Класс предназначен для хранения объектов (файлов) с которыми работает программа.
@@ -35,6 +44,50 @@ public class FileItem {
     @XmlElement
     @XmlJavaTypeAdapter(PathAdapter.class)
     private Path unpackPath;
+
+    public static Map<FileItem, String> getMapToPackFromArchiveObject (ArchiveItemTableView.ArchiveObject archiveObject) throws Exception {
+        Map<FileItem, String> map = new HashMap<>();
+        for (TableFileItem fileItem : archiveObject.getFileItems()) {
+            Path startPath = Paths.get(fileItem.getPath());
+            if (Files.isRegularFile(startPath)) {
+                String zipPath = archiveObject.getPathToUnpack();
+                if (!fileItem.getRelativePath().isBlank()) {
+                    zipPath = Paths.get(zipPath).resolve(fileItem.getRelativePath()).toString();
+                }
+
+                FileItem item = new FileItem(startPath);
+                item.setCRC32(new CRC32Calculator().getCRC32(startPath));
+                map.put(item,zipPath);
+            } else {
+                FilesParser parser = new FileSystemDirParse();
+                List<String> paths = parser.getFilesAddress(startPath.toString());
+                String zipPath = archiveObject.getPathToUnpack();
+                if (!fileItem.getRelativePath().isBlank()) {
+                    zipPath = Paths.get(zipPath).resolve(fileItem.getRelativePath()).toString();
+                }
+                FileItem main = new FileItem(startPath);
+                main.setCRC32(0L);
+                map.put(main,zipPath);
+
+                for (String s : paths) {
+                   Path sPath = Paths.get(s);
+                   FileItem item = new FileItem(sPath);
+                   if (Files.isRegularFile(sPath)) {
+                       item.setCRC32(new CRC32Calculator().getCRC32(sPath));
+                   } else {
+                       item.setCRC32(0L);
+                   }
+
+                    Path relativePathPart = startPath.relativize(Paths.get(s));
+
+                    String fullPath = Paths.get(zipPath).resolve(relativePathPart).toString();
+                    map.put(item,fullPath);
+                }
+
+            }
+        }
+        return map;
+    }
 
     private FileItem() {
         path = null;

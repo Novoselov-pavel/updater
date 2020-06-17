@@ -2,6 +2,7 @@ package com.npn.javafx.controller.uicontroller;
 
         import com.npn.javafx.Updater;
         import com.npn.javafx.model.MainFormStage;
+        import com.npn.javafx.model.Version;
         import com.npn.javafx.ui.ArchiveItemTableView;
         import com.npn.javafx.ui.TableFileItem;
         import javafx.application.Platform;
@@ -15,6 +16,7 @@ package com.npn.javafx.controller.uicontroller;
 
         import java.io.File;
         import java.io.IOException;
+        import java.nio.file.Path;
         import java.util.List;
         import java.util.Locale;
         import java.util.ResourceBundle;
@@ -41,6 +43,9 @@ public class UIMainFormController {
     private List<UIMainChildAbstractController> childControllers;
 
     private List<ArchiveItemTableView.ArchiveObject> archiveItemsList = null;
+
+    private Version version = null;
+    private Path distrDir = null;
 
     public UIMainFormController() {
     }
@@ -144,6 +149,22 @@ public class UIMainFormController {
 
     public void setArchiveItemsList(List<ArchiveItemTableView.ArchiveObject> archiveItemsList) {
         this.archiveItemsList = archiveItemsList;
+    }
+
+    public Version getVersion() {
+        return version;
+    }
+
+    public void setVersion(Version version) {
+        this.version = version;
+    }
+
+    public Path getDistrDir() {
+        return distrDir;
+    }
+
+    public void setDistrDir(Path distrDir) {
+        this.distrDir = distrDir;
     }
 
     public TableFileItem[] getTableItems() {

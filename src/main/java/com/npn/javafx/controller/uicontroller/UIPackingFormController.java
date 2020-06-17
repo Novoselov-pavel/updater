@@ -1,17 +1,21 @@
 package com.npn.javafx.controller.uicontroller;
 
 
-import com.npn.javafx.model.CRC32Calculator;
-import com.npn.javafx.model.FileItem;
-import com.npn.javafx.model.MainFormStage;
-import com.npn.javafx.model.Setting;
+import com.npn.javafx.model.*;
 import com.npn.javafx.model.drivers.ZipDriver;
 import com.npn.javafx.ui.ArchiveItemTableView;
 import com.npn.javafx.ui.TableFileItem;
 import com.npn.javafx.ui.UIMessage;
+import com.sun.javafx.tk.Toolkit;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -25,18 +29,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.FutureTask;
 
 public class UIPackingFormController extends UIMainChildAbstractController {
     private List<ArchiveItemTableView.ArchiveObject> archiveObjects = null;
     private volatile boolean valid = false;
     private List<FileItem> zipFilesList = null;
+    private Path distrPath = null;
+    private Version version = null;
+    private final DoubleProperty progress = new SimpleDoubleProperty(0d);
+    private final StringProperty text = new SimpleStringProperty("");
+    private  javafx.collections.ObservableList<javafx.scene.Node> textStatusNode;
+    private final UIMessage uiMessage = UIMessage.getUiMessage();
+
+    private final CountDownLatch sync = new CountDownLatch(2);
 
     @FXML
     ProgressBar progressBar;
 
     @FXML
-    TextFlow textFlow;
+    Label label;
 
 
     /**
@@ -58,14 +71,22 @@ public class UIPackingFormController extends UIMainChildAbstractController {
     @Override
     public void update() {
         if (stage == getFormStage()) {
-            progressBar.setProgress(0);
+            progressBar.progressProperty().unbind();
+            progressBar.progressProperty().bind(progress);
+
+
+            version = mainController.getVersion();
+            distrPath = mainController.getDistrDir();
             currentNode.setVisible(true);
+            textFlowUpdate(sync);
             archiveObjects = mainController.getArchiveItemsList();
             Thread thread = new Thread(new Work());
-            thread.setDaemon(true);
             thread.start();
+
+            ////TODO добавить отмену по кнопке esc
         } else {
             currentNode.setVisible(false);
+            ///добавить передачу данных в главный контроллер при успешном завершении
         }
     }
 
@@ -98,11 +119,57 @@ public class UIPackingFormController extends UIMainChildAbstractController {
     }
 
     /**
+     * обновление Label
+     */
+    private void textFlowUpdate(CountDownLatch sync) {
+//        Runnable runnable = () -> {
+//            sync.countDown();
+//            while (!valid) {
+//                try {
+//                    sync.await();
+//                    String s =  uiMessage.getMessage();
+//                    text.setValue(s);
+//                    Thread.sleep(500);
+//                } catch (InterruptedException e) {
+//                    return;
+//                }
+//            }
+//        };
+
+//        Platform.runLater(runnable);
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                sync.countDown();
+                updateMessage("");
+                while (!valid) {
+                    try {
+                        sync.await();
+                        String s =  uiMessage.getMessage();
+                        updateMessage(s);
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        return null;
+                    }
+                }
+                return null;
+            }
+        };
+
+
+        label.textProperty().unbind();
+        label.textProperty().bind(task.messageProperty());
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    /**
      * Класс запуска архивирования и обновления ProgressBar и TextFlow
      *
      */
     private class Work implements Runnable {
-        private final UIMessage uiMessage = UIMessage.getUiMessage();
+
 
         /**
          * Computes a result, or throws an exception if unable to do so.
@@ -115,54 +182,39 @@ public class UIPackingFormController extends UIMainChildAbstractController {
             List<FileItem> zipList = new ArrayList<>();
             try {
                 valid = false;
-                /// обвязка для вывода информации в TextFlow;
-                progressBar.setProgress(0);
+                Thread.sleep(1000);
+
                 if (archiveObjects == null) throw new IllegalArgumentException("List<ArchiveItemTableView.ArchiveObject> is null");
-                Platform.runLater(()->{
-                    while (true) {
-                        try {
-                            String s =  uiMessage.getMessage();
-                            Text text = new Text(s);
-                            text.setFill(Color.BLACK);
-                            textFlow.getChildren().clear();
-                            textFlow.getChildren().add(text);
-                        } catch (InterruptedException e) {
-                            textFlow.getChildren().clear();
-                            return;
-                        }
-                    }
-                });
-                Thread.sleep(800);
+
+                /// обвязка для вывода информации в TextFlow;
+                sync.countDown();
+                sync.await();
                 uiMessage.setWork(true);
 
-                long maxNumber = archiveObjects.size();
 
-                long oneStep = 1L/maxNumber;
+                progress.setValue(0.2d);
+                double maxNumber = archiveObjects.size();
+
+                double oneStep = 1d/maxNumber;
                 //выполнение упаковки архивов
                 for (ArchiveItemTableView.ArchiveObject archiveObject : archiveObjects) {
-                    Thread.sleep(10);
-                    ZipDriver zipDriver = new ZipDriver();
-                    Map<FileItem, String> map = new HashMap<>();
 
-                    for (TableFileItem fileItem : archiveObject.getFileItems()) {
-                        Path filePath = Paths.get(fileItem.getPath());
-                        FileItem item = new FileItem(filePath);
-                        item.setCRC32(new CRC32Calculator().getCRC32(filePath));
-                        String relativePath = Paths.get(fileItem.getRelativePath()).resolve(filePath.getFileName()).toString();
-                        map.put(item,relativePath);
-                        Thread.sleep(1);
-                    }
-                    FileItem zipFile = zipDriver.pack(map,archiveObject.getZipFilePath(), Setting.getConsoleCharset());
+                    Path zipFilePath = createZipFilePath(archiveObject);
+                    ZipDriver zipDriver = new ZipDriver();
+                    Map<FileItem, String> map = FileItem.getMapToPackFromArchiveObject(archiveObject);
+                    FileItem zipFile = zipDriver.pack(map,zipFilePath, Setting.getConsoleCharset());
                     zipList.add(zipFile);
-                    progressBar.setProgress(progressBar.getProgress() + oneStep);
+                    progress.setValue(progress.getValue() + oneStep);
                 }
             } catch (InterruptedException e) {
                 deleteFiles(zipList);
                 valid = false;
             } catch (Exception e) {
+                try {
+                    uiMessage.sendMessage(e.getMessage());
+                } catch (InterruptedException ignore) {}
                 deleteFiles(zipList);
                 valid = false;
-                ///TODO добавить вызов окна с ошибкой
             }finally {
                 uiMessage.setWork(false);
             }
@@ -178,6 +230,11 @@ public class UIPackingFormController extends UIMainChildAbstractController {
         private void deleteFiles(List<FileItem> zipList) {
             zipList.forEach(zip->zip.getPath().toFile().delete());
         }
+
+        private Path createZipFilePath(ArchiveItemTableView.ArchiveObject archiveObject) {
+            return distrPath.resolve(version.toString()).resolve(archiveObject.getName());
+        }
+
 
     }
 

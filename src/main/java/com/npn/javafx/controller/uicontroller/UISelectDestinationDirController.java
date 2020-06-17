@@ -17,6 +17,7 @@ import javafx.scene.input.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Paths;
 
 public class UISelectDestinationDirController extends UIMainChildAbstractController {
     private static final String tickPng = "/ui/pics/tick.png";
@@ -112,6 +113,10 @@ public class UISelectDestinationDirController extends UIMainChildAbstractControl
             currentNode.setVisible(true);
         } else {
             currentNode.setVisible(false);
+            if (isValid()) {
+                mainController.setVersion(version);
+                mainController.setDistrDir(Paths.get(folderPathField.getText()));
+            }
         }
     }
 

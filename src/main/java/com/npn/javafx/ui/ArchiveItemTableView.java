@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -37,7 +38,12 @@ public class ArchiveItemTableView {
         pathToUnpack.setMinWidth(400);
         filesName.setMinWidth(400);
         //доп свойства
+        name.setEditable(true);
+        pathToUnpack.setEditable(true);
         filesName.setEditable(false);
+        // установка обработчиков редактирования ячейки
+        name.setCellFactory(TextFieldTableCell.forTableColumn());
+        pathToUnpack.setCellFactory(TextFieldTableCell.forTableColumn());
         //подключение источников данных к ячейкам
         name.setCellValueFactory(x->x.getValue().nameProperty());
         pathToUnpack.setCellValueFactory(x->x.getValue().pathToUnpackProperty());
@@ -61,6 +67,7 @@ public class ArchiveItemTableView {
         //подключение колонок и источника
         table.getColumns().addAll(name,pathToUnpack,filesName);
         table.setItems(fileDate);
+        table.setEditable(true);
 
         //добавление удаления строк по кнопке delete
         table.addEventHandler(KeyEvent.KEY_RELEASED, x-> {
@@ -142,9 +149,10 @@ public class ArchiveItemTableView {
         return newPath.toString().length()<=checkingPath.length();
     }
 
-
     public static class ArchiveObject {
+        // имя файла архива
         private StringProperty name = new SimpleStringProperty(new BigInteger(34,new SecureRandom()).toString(32));
+        // путь для распаковки архива
         private StringProperty pathToUnpack = new SimpleStringProperty("");
         private boolean needPack;
 
@@ -181,15 +189,6 @@ public class ArchiveItemTableView {
 
         public String getPathToUnpack() {
             return pathToUnpack.getValue();
-        }
-
-        /**
-         * TODO
-         *
-         * @return
-         */
-        public Path getZipFilePath() {
-            return Paths.get(getName());
         }
 
         public StringProperty pathToUnpackProperty() {

@@ -3,7 +3,6 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.npn.javafx.controller.uicontroller.UIPackingFormController">
    <children>
@@ -18,10 +17,10 @@
             <RowConstraints minHeight="0.0" prefHeight="100.0" valignment="TOP" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TextFlow fx:id="textFlow" maxHeight="40.0" prefHeight="40.0" prefWidth="580.0" textAlignment="JUSTIFY" GridPane.rowIndex="1">
+            <Label fx:id="label" maxHeight="40.0" textAlignment="JUSTIFY" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" />
-               </GridPane.margin></TextFlow>
+               </GridPane.margin></Label>
             <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" prefHeight="40.0" progress="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="10.0" right="10.0" top="10.0" />
