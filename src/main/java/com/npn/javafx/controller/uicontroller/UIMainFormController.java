@@ -1,6 +1,7 @@
 package com.npn.javafx.controller.uicontroller;
 
         import com.npn.javafx.Updater;
+        import com.npn.javafx.model.FileItem;
         import com.npn.javafx.model.MainFormStage;
         import com.npn.javafx.model.Version;
         import com.npn.javafx.ui.ArchiveItemTableView;
@@ -44,8 +45,14 @@ public class UIMainFormController {
 
     private List<ArchiveItemTableView.ArchiveObject> archiveItemsList = null;
 
+    private  List<FileItem> zipFilesList = null;
+
     private Version version = null;
     private Path distrDir = null;
+
+    private String nextLocale = "";
+
+
 
     public UIMainFormController() {
     }
@@ -167,6 +174,14 @@ public class UIMainFormController {
         this.distrDir = distrDir;
     }
 
+    public List<FileItem> getZipFilesList() {
+        return zipFilesList;
+    }
+
+    public void setZipFilesList(List<FileItem> zipFilesList) {
+        this.zipFilesList = zipFilesList;
+    }
+
     public TableFileItem[] getTableItems() {
         return tableItems;
     }
@@ -203,8 +218,7 @@ public class UIMainFormController {
         @Override
         public void handle(ActionEvent actionEvent) {
             if (stage.ordinal() >= MainFormStage.values().length - 1) {
-                ///TODO обработчик запуска в работу
-                return;
+                Platform.exit();
             } else {
                 if (childControllers.stream().filter(x->x.getFormStage().ordinal()<=stage.ordinal()).allMatch(UIMainChildAbstractController::isValid)) {
                     stage = MainFormStage.values()[stage.ordinal() + 1];

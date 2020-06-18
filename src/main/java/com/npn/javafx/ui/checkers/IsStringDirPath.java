@@ -1,8 +1,5 @@
 package com.npn.javafx.ui.checkers;
 
-import com.npn.javafx.ui.TableFileItem;
-import javafx.collections.ObservableList;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

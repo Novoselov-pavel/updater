@@ -10,9 +10,6 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
-import java.io.IOException;
-import java.util.ResourceBundle;
-
 /**
  * Контроллер для UIHeader.fxml
  */

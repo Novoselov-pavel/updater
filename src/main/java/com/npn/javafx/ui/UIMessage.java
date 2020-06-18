@@ -15,7 +15,7 @@ public class UIMessage {
 
     private volatile boolean work = false;
 
-    private UIMessage() {};
+    private UIMessage() {}
 
     public static UIMessage getUiMessage() {
         return uiMessage;

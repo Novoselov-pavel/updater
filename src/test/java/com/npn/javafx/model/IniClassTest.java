@@ -1,17 +1,14 @@
 package com.npn.javafx.model;
 
 import com.npn.javafx.model.drivers.PropertiesXmlDriver;
-import com.npn.javafx.model.drivers.ZipDriver;
 import com.npn.javafx.model.validators.PropertiesValidatorByEnum;
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

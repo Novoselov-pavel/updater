@@ -13,11 +13,11 @@ import java.util.ResourceBundle;
  * Диалог открытия файла/ папки
  */
 public class UIOpenFileDialog {
-    private ResourceBundle resourceBundle;
-    private String  resourceBundleKey;
-    private String startPath;
-    private File defaultFolder;
-    private Stage mainWindows;
+    private final ResourceBundle resourceBundle;
+    private final String  resourceBundleKey;
+    private final String startPath;
+    private final File defaultFolder;
+    private final Stage mainWindows;
 
     public UIOpenFileDialog(Stage mainWindows,ResourceBundle resourceBundle,
                             String resourceBundleKey, String startPath, File defaultFolder) {

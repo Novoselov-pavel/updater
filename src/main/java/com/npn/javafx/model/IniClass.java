@@ -212,6 +212,15 @@ public class IniClass {
         fileItems.add(fileItem);
     }
 
+    /** Добавляет FileItem в список
+     *
+     * @param fileItems FileItem
+     */
+    public void addAllFileItem(final Collection<FileItem> fileItems) {
+        this.fileItems.addAll(fileItems);
+    }
+
+
     /** Удаляет FileItem из списка
      *
      * @param fileItem FileItem

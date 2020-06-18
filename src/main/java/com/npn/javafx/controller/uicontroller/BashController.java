@@ -1,6 +1,5 @@
 package com.npn.javafx.controller.uicontroller;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.npn.javafx.Updater;
 import com.npn.javafx.model.IniClass;
 import com.npn.javafx.model.Setting;
@@ -11,7 +10,6 @@ import com.npn.javafx.model.exception.FailUpdateFiles;
 import com.npn.javafx.model.interfaces.FilesParser;
 import com.npn.javafx.model.interfaces.PropertiesLoader;
 import com.npn.javafx.model.interfaces.PropertiesValidator;
-import com.npn.javafx.model.interfaces.VersionsParser;
 import com.npn.javafx.model.validators.PropertiesValidatorByEnum;
 import com.npn.javafx.ui.UiConsole;
 import org.slf4j.Logger;
@@ -23,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * Контроллер работы от параметров командной строки
@@ -153,9 +150,26 @@ public class BashController {
         setting.setVersion(neededVersion);
         setting.saveSetting(new PropertiesXmlDriver(),path);
         logger.info("End update to version\t{}\tinput file\t{}",version,path);
+
+        if (setting.getExeFileName()!=null) {
+            startProgram(setting.getExeFileName());
+        }
     }
 
+    /**
+     * Запускает программу из пути (реализация не очень правильная)
+     * согласно документации на ProcessBuilder требуется перехват и управление standard output and standard error stream
+     *
+     * @param exeFileName путь к программе
+     * @throws Exception
+     */
+    private void startProgram(String exeFileName) throws Exception {
+        ProcessBuilder builder = new ProcessBuilder(exeFileName);
+        builder.inheritIO();
+        builder.redirectErrorStream(true);
+        builder.start();
 
+    }
 
 
 
@@ -166,7 +180,7 @@ public class BashController {
     /**
      * Перекодирует строку из консольной кодировки в UTF-8
      * Примечание: в связи с тем что Windows упрямо выдает неверную кодировку своей консоли, метод не гарантирует правильность
-     * работы на конкретной системе, требуется тестирование под операционнуб систему
+     * работы на конкретной системе, требуется тестирование под операционную систему
      *
      * @param string исходная строка
      * @return строка в кодировке UTF-8

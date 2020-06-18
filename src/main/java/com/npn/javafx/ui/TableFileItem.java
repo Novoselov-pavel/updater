@@ -48,6 +48,9 @@ public class TableFileItem {
         this.path.setValue(path);
     }
 
+    /**
+     * Путь к файлу/папке
+     */
     public String getPath() {
         return path.get();
     }
@@ -56,6 +59,9 @@ public class TableFileItem {
         this.path.setValue(path);
     }
 
+    /**
+     * Относительный путь куда распаковывается файл/папка
+     */
     public String getRelativePath() {
         return relativePath.get();
     }

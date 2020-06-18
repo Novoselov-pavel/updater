@@ -70,7 +70,7 @@ public class UIFactory {
             case SELECT_DESTINATION_DIR:
                 return loadChildNode(UISelectDestinationDirController.getFXMLPath(),resourceBundle,mainController);
             case PACK_DISTR:
-                return loadChildNode(UIPackingFormController.getFXMLPath(),resourceBundle,mainController); //TODO
+                return loadChildNode(UIPackingFormController.getFXMLPath(),resourceBundle,mainController);
             default:
                 return null;
 

@@ -1,6 +1,5 @@
 package com.npn.javafx.ui;
 
-import com.google.common.collect.Comparators;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;

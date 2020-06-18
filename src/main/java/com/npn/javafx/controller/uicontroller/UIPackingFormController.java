@@ -2,12 +2,13 @@ package com.npn.javafx.controller.uicontroller;
 
 
 import com.npn.javafx.model.*;
+import com.npn.javafx.model.drivers.SafeCopyFiles;
 import com.npn.javafx.model.drivers.ZipDriver;
+import com.npn.javafx.model.drivers.parsers.FileSystemParser;
+import com.npn.javafx.model.interfaces.FilesParser;
 import com.npn.javafx.ui.ArchiveItemTableView;
 import com.npn.javafx.ui.TableFileItem;
 import com.npn.javafx.ui.UIMessage;
-import com.sun.javafx.tk.Toolkit;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,22 +18,20 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.FutureTask;
+import java.util.stream.Collectors;
 
 public class UIPackingFormController extends UIMainChildAbstractController {
+    private static final String INI_FILE_NAME = "update.ini";
     private List<ArchiveItemTableView.ArchiveObject> archiveObjects = null;
     private volatile boolean valid = false;
     private List<FileItem> zipFilesList = null;
@@ -82,11 +81,11 @@ public class UIPackingFormController extends UIMainChildAbstractController {
             archiveObjects = mainController.getArchiveItemsList();
             Thread thread = new Thread(new Work());
             thread.start();
-
-            ////TODO добавить отмену по кнопке esc
         } else {
             currentNode.setVisible(false);
-            ///добавить передачу данных в главный контроллер при успешном завершении
+            if (isValid()) {
+                mainController.setZipFilesList(zipFilesList);
+            }
         }
     }
 
@@ -170,7 +169,6 @@ public class UIPackingFormController extends UIMainChildAbstractController {
      */
     private class Work implements Runnable {
 
-
         /**
          * Computes a result, or throws an exception if unable to do so.
          *
@@ -191,21 +189,31 @@ public class UIPackingFormController extends UIMainChildAbstractController {
                 sync.await();
                 uiMessage.setWork(true);
 
+                List<ArchiveItemTableView.ArchiveObject> copyList = archiveObjects.stream().filter(x->!x.isNeedPack()).collect(Collectors.toList());
+                List<ArchiveItemTableView.ArchiveObject> archiveObList = archiveObjects.stream().filter(ArchiveItemTableView.ArchiveObject::isNeedPack).collect(Collectors.toList());
+                List<FileItem> copyFileItem = copyFiles(copyList);
+                zipList.addAll(copyFileItem);
 
                 progress.setValue(0.2d);
                 double maxNumber = archiveObjects.size();
 
                 double oneStep = 1d/maxNumber;
                 //выполнение упаковки архивов
-                for (ArchiveItemTableView.ArchiveObject archiveObject : archiveObjects) {
+                for (ArchiveItemTableView.ArchiveObject archiveObject : archiveObList) {
 
                     Path zipFilePath = createZipFilePath(archiveObject);
                     ZipDriver zipDriver = new ZipDriver();
                     Map<FileItem, String> map = FileItem.getMapToPackFromArchiveObject(archiveObject);
                     FileItem zipFile = zipDriver.pack(map,zipFilePath, Setting.getConsoleCharset());
+                    zipFile.setUnpack(true);
+                    zipFile.setUnpackPath(Paths.get(""));
                     zipList.add(zipFile);
                     progress.setValue(progress.getValue() + oneStep);
                 }
+                IniClass iniClass = new IniClass();
+                iniClass.addAllFileItem(zipList);
+                iniClass.saveToXMLFile(distrPath.resolve(version.toString()).resolve(INI_FILE_NAME));
+
             } catch (InterruptedException e) {
                 deleteFiles(zipList);
                 valid = false;
@@ -218,7 +226,7 @@ public class UIPackingFormController extends UIMainChildAbstractController {
             }finally {
                 uiMessage.setWork(false);
             }
-
+            progress.setValue(1d);
             zipFilesList = zipList;
             valid = true;
         }
@@ -233,6 +241,57 @@ public class UIPackingFormController extends UIMainChildAbstractController {
 
         private Path createZipFilePath(ArchiveItemTableView.ArchiveObject archiveObject) {
             return distrPath.resolve(version.toString()).resolve(archiveObject.getName());
+        }
+
+        /**
+         * Копируем файлы в папку версии
+         * @param copyList
+         * @throws Exception
+         */
+        private List<FileItem> copyFiles(List<ArchiveItemTableView.ArchiveObject> copyList) throws Exception {
+            List<TableFileItem> list = copyList.stream().flatMap(x->x.getFileItems().stream()).collect(Collectors.toList());
+            Path dir =  distrPath.resolve(version.toString());
+            List <FileItem> retVal = new ArrayList<>();
+
+            for (TableFileItem fileItem : list) {
+                Path rootEl = Paths.get(fileItem.getPath());
+                Map<Path,Path> copyPathList = new HashMap<>();
+                if(Files.isRegularFile(rootEl)) {
+                    Path destination = dir.resolve(rootEl.getFileName());
+                    copyPathList.put(rootEl,destination);
+
+                    SafeCopyFiles safeCopyFiles = new SafeCopyFiles(copyPathList);
+                    safeCopyFiles.run(); /// используется в однопоточном режиме специально
+
+                    FileItem item = new FileItem(rootEl.getFileName());
+                    item.setCRC32(new CRC32Calculator().getCRC32(destination));
+                    item.setUnpack(false);
+                    item.setUnpackPath(Paths.get(fileItem.getRelativePath()));
+                    retVal.add(item);
+                } else {
+                    FilesParser parser = new FileSystemParser();
+                    List<String> files = parser.getFilesAddress(rootEl.toString());
+                    for (String file : files) {
+                        Path fPath = Paths.get(file);
+                        copyPathList.put(fPath,dir.resolve(fPath.getFileName()));
+                    }
+                    SafeCopyFiles safeCopyFiles = new SafeCopyFiles(copyPathList);
+                    safeCopyFiles.run(); /// используется в однопоточном режиме специально
+                    for (Map.Entry<Path, Path> entry : copyPathList.entrySet()) {
+
+                        FileItem item = new FileItem(entry.getValue().getFileName());
+                        item.setCRC32(new CRC32Calculator().getCRC32(entry.getValue()));
+                        item.setUnpack(false);
+                        Path relativeEntryPath = rootEl.relativize(entry.getKey());
+
+                        item.setUnpackPath(Paths.get(fileItem.getRelativePath()).resolve(relativeEntryPath));
+                        retVal.add(item);
+                    }
+                }
+            }
+
+            return retVal;
+
         }
 
 
