@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>updater xml file</comment>
+<entry key="FILE_PARSER_NAME">FILE</entry>
+<entry key="VERSION">10.0.1</entry>
+<entry key="DIR_PARSER_NAME">FILE</entry>
+<entry key="UPDATE_LOCATION">/home/pavel/IdeaProjects/javafx/updater/src/test/testArchive/iniFile.xml</entry>
+<entry key="INI_FILE_NAME">iniFile.xml</entry>
+<entry key="EXE_FILE_NAME">test.test</entry>
+</properties>

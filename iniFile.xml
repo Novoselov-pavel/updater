@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<iniClass>
+    <file>
+        <path>Carlson.java</path>
+        <CRC32>3339254451</CRC32>
+        <unpack>false</unpack>
+        <unpackPath>Carlson.java</unpackPath>
+    </file>
+    <file>
+        <path>Human.java</path>
+        <CRC32>3474993787</CRC32>
+        <unpack>false</unpack>
+        <unpackPath>/abb/Human.java</unpackPath>
+    </file>
+</iniClass>
